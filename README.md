@@ -1,80 +1,31 @@
-# UI-Router Core &nbsp;[![Build Status](https://travis-ci.org/ui-router/core.svg?branch=master)](https://travis-ci.org/ui-router/core)
+# Deep State Redirect
 
-UI-Router core provides client-side [Single Page Application](https://en.wikipedia.org/wiki/Single-page_application) 
-routing for JavaScript.
-This core is framework agnostic.
-It is used to build
-[UI-Router for Angular 1](//ui-router.github.io/ng1),
-[UI-Router for Angular 2](//ui-router.github.io/ng2), and 
-[UI-Router React](//ui-router.github.io/react).
+### DSR for UI-Router 1.0 &nbsp;[![Build Status](https://travis-ci.org/christopherthielen/deep-state-redirect.svg?branch=master)](https://travis-ci.org/christopherthielen/deep-state-redirect)
 
-## SPA Routing
+With Deep State Redirect, a parent state remembers whatever child state was last activated.
+When the user directly reactivates the parent state, they are redirected to the nested state (which was previously activated).
 
-Routing frameworks for SPAs update the browser's URL as the user navigates through the app.  Conversely, this allows 
-changes to the browser's URL to drive navigation through the app, thus allowing the user to create a bookmark to a 
-location deep within the SPA.
 
-UI-Router applications are modeled as a hierarchical tree of states. UI-Router provides a 
-[*state machine*](https://en.wikipedia.org/wiki/Finite-state_machine) to manage the transitions between those 
-application states in a transaction-like manner. 
+## Overview and Use Case
 
-## Features
+Deep State Redirect (DSR) is a marker you can add to a state definition.
 
-UI-Router Core provides the following features:
+When a child state of the DSR marked state is activated, UI-Router Extras remembers the child and its parameters.
+The most-recently-activate child is remembered no matter where the user navigates in the state tree.
+When the DSR marked state is directly activated, UI-Router Extras will redirect to the remembered child state and parameters.
 
-- State-machine based routing
-  - Hierarchical states
-  - Enter/Exit hooks
-- Name based hierarchical state addressing
-  - Absolute, e.g., `admin.users`
-  - Relative, e.g., `.users`
-- Flexible Views
-  - Nested Views
-  - Multiple Named Views
-- Flexible URLs and parameters
-  - Path, Query, and non-URL parameters
-  - Typed parameters 
-    - Built in: `int`, `string`, `date`, `json`
-    - Custom: define your own encoding/decoding
-  - Optional or required parameters
-  - Default parameter values (optionally squashed from URL)
-- Transaction-like state transitions
-  - Transition Lifecycle Hooks
-  - First class async support
+One use case for DSR is a tabbed application.
+Each tab might contain an application module.
+Each tabs' state is marked as deepStateRedirect.
+When the user navigates into the tab, and drills down to a substate, DSR will remember the substate.
+The user can then navigate to other tabs (or somewhere else completely).
+When they click the original tab again, it will transition to the remembered ehild state and parameters of that tab, making it appear that the tab was never destructed.
 
-## Get Started
+Deep State Redirect can be used with StickyStates, or on its own.
+If used with a Sticky State, the states will be reactivated, and the DOM will be unchanged (as opposed to the states being re-entered and controllers re-initialized)
 
-Get started using one of the existing UI-Router projects:
+## Using
 
-- [UI-Router for Angular 1](https://ui-router.github.io/ng1)
-- [UI-Router for Angular 2](https://ui-router.github.io/ng2)
-- [UI-Router for React](https://ui-router.github.io/react)
+See: http://christopherthielen.github.io/ui-router-extras/#/dsr
 
-## Build your own
-
-UI-Router core can be used implement a router for any web-based component framework.
-There are four basic things to build for a specific component framework:
-
-### UIView
-
-A UIView is a component which acts as a viewport for another component, defined by a state.
-When the state is activated, the UIView should render the state's component.
-
-### UISref (optional, but useful)
-
-A `UISref` is a link (absolute, or relative) which activates a specific state and/or parameters.
-When the `UISref` is clicked, it should initiate a transition to the linked state.
-
-### UISrefActive (optional)
-
-When combined with a `UISref`, a `UISrefActive` toggles a CSS class on/off when its `UISref` is active/inactive.
-
-### Bootstrap mechanism (optional)
-
-Implement framework specific bootstrap requirements, if any.
-For example, UI-Router for Angular 1 and Angular 2 integrates with the ng1/ng2 Dependency Injection lifecycles.
-On the other hand, UI-Router for React uses a simple JavaScript based bootstrap, i.e., `new UIRouterReact().start();`.
-
-## Getting help
-
-[Create an issue](https://github.com/ui-router/core/issues) or contact us on [Gitter](https://gitter.im/angular-ui/ui-router).
+TODO: Move docs here
