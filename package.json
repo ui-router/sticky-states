@@ -1,0 +1,69 @@
+{
+  "name": "ui-router-dsr",
+  "description": "UI-Router Deep State Redirect: redirect to the most recently activated child state",
+  "version": "1.0.0",
+  "scripts": {
+    "clean": "shx rm -rf lib lib-esm",
+    "build": "npm run clean && tsc && tsc -p tsconfig.esm.json",
+    "test": "karma start",
+    "watch": "run-p watch:*",
+    "watch:buildjs": "tsc -w",
+    "watch:test": "karma start --singleRun=false --autoWatch=true --autoWatchInterval=1",
+    "debug": "karma start --singleRun=false --autoWatch=true --autoWatchInterval=1 --browsers=Chrome"
+  },
+  "homepage": "https://ui-router.github.io",
+  "contributors": [
+    {
+      "name": "Chris Thielen",
+      "web": "https://github.com/christopherthielen"
+    }
+  ],
+  "maintainers": [
+    {
+      "name": "UIRouter Team",
+      "web": "https://github.com/ui-router?tab=members"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui-router/dsr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ui-router/dsr/issues"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "jsnext:main": "lib-esm/index.js",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jasmine": "^2.2.34",
+    "@types/jquery": "^1.10.31",
+    "@types/lodash": "^4.14.38",
+    "awesome-typescript-loader": "^2.2.4",
+    "conventional-changelog": "^1.1.0",
+    "conventional-changelog-cli": "^1.1.1",
+    "conventional-changelog-ui-router-core": "^1.3.0",
+    "core-js": "^2.4.1",
+    "jasmine-core": "^2.4.1",
+    "karma": "^1.2.0",
+    "karma-chrome-launcher": "~0.1.0",
+    "karma-coverage": "^0.5.3",
+    "karma-jasmine": "^1.0.2",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "karma-script-launcher": "~0.1.0",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^1.8.0",
+    "lodash": "^4.16.6",
+    "npm-run-all": "^3.1.1",
+    "readline-sync": "^1.4.4",
+    "shelljs": "^0.7.0",
+    "shx": "^0.1.4",
+    "tslint": "=2.5.0",
+    "typescript": "^2.1.1",
+    "ui-router-core": "^1.0.1",
+    "webpack": "^1.13.3"
+  }
+}

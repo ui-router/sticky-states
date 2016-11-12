@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "target": "es5",
+    "lib": [ "es6", "dom" ],
+    "allowSyntheticDefaultImports": true,
+    "outDir": "../.lib-test",
+    "declaration": true,
+    "sourceMap": true
+  },
+  "exclude": ["node_modules", "lib", "lib-esm"]
+}
