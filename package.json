@@ -9,7 +9,7 @@
     "watch": "run-p watch:*",
     "watch:buildjs": "tsc -w",
     "watch:test": "karma start --singleRun=false --autoWatch=true --autoWatchInterval=1",
-    "debug": "karma start --singleRun=false --autoWatch=true --autoWatchInterval=1 --browsers=Chrome"
+    "debug": "karma start --singleRun=false --autoWatch=true --autoWatchInterval=1 --browsers=ChromeCanary"
   },
   "homepage": "https://ui-router.github.io",
   "contributors": [
@@ -39,9 +39,13 @@
   "typings": "lib/index.d.ts",
   "license": "MIT",
   "devDependencies": {
+    "@types/angular": "^1.5.20",
+    "@types/angular-mocks": "^1.5.6",
     "@types/jasmine": "^2.2.34",
     "@types/jquery": "^1.10.31",
     "@types/lodash": "^4.14.38",
+    "angular": "^1.5.8",
+    "angular-mocks": "^1.5.8",
     "awesome-typescript-loader": "^2.2.4",
     "conventional-changelog": "^1.1.0",
     "conventional-changelog-cli": "^1.1.1",

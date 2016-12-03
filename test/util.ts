@@ -148,3 +148,9 @@ export function resetTransitionLog() {
   tLog = new TransitionAudit();
   tExpected = new TransitionAudit();
 }
+
+export const tlog = () => tLog;
+
+export const equalityTester = (first, second) =>
+    Object.keys(second).reduce((acc, key) =>
+    first[key] == second[key] && acc, true);

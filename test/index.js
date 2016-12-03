@@ -4,7 +4,7 @@
 require('core-js');
 require('ui-router-core');
 require('ui-router-core/lib/justjs');
-require('../src/deepStateRedirect');
+require('../src/stickyStates');
 
 var testsContext = require.context(".", true, /Spec$/);
 testsContext.keys().forEach(testsContext);
