@@ -102,6 +102,9 @@ export function getTestGoFn($uiRouter) {
  *    { redirect: redirectstatename }
  */
 async function testGo(state, tAdditional, options) {
+  if (tAdditional && Array.isArray(tAdditional.inactivated)) tAdditional.inactivated.reverse();
+  if (tAdditional && Array.isArray(tAdditional.exited)) tAdditional.exited.reverse();
+
   await $state.go(state, options && options.params, options);
 
   var expectRedirect = options && options.redirect;
@@ -125,13 +128,10 @@ async function testGo(state, tAdditional, options) {
 
   if (tExpected && tAdditional) {
     // append all arrays in tAdditional to arrays in tExpected
-    Object.keys(tAdditional).forEach(key => tExpected[key] = tExpected[key].concat(tAdditional[key]));
-    // angular.forEach(tAdditional, function (value, key) {
-    //   tExpected[key] = tExpected[key].concat(tAdditional[key]);
-    // });
+    Object.keys(tAdditional).forEach(key =>
+        tExpected[key] = tExpected[key].concat(tAdditional[key]));
 
     Object.keys(tLog).filter(x => x !== 'views').forEach(key => {
-    // angular.forEach(_.without(_.keys(tLog), 'views'), function(key) {
       var left = key + ": " + JSON.stringify(tLog[key]);
       var right = key + ": " + JSON.stringify(tExpected[key]);
       expect(left).toBe(right);
