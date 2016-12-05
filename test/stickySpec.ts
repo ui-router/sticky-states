@@ -11,12 +11,7 @@ let router: UIRouter;
 let $state: StateService;
 let $view: ViewService;
 let $registry: StateRegistry;
-let $stickyState: { inactives: () => any[] };
-let inactiveViews = () => $stickyState.inactives()
-    .map((node: PathNode) => node.views)
-    .map(vcs => vcs.map(vc => vc.viewDecl.$name))
-    .reduce(unnestR, []);
-
+let $stickyState: StickyStatesPlugin;
 let testGo: Function;
 
 function ssReset(newStates: StateDeclaration[]) {
@@ -130,13 +125,13 @@ describe('stickyState', function () {
       expect(Array.isArray($stickyState.inactives())).toBeTruthy()
     });
 
-    it('$stickyState.inactives() should hold inactive PathNodes', async function(done) {
+    it('$stickyState.inactives() should hold inactive State Declarations', async function(done) {
       let root = $registry.root();
       await testGo("A._1", { entered: [ "A", "A._1" ]});
       await testGo("A._2", { inactivated: "A._1", entered: "A._2" });
 
       expect($stickyState.inactives().length).toBe(1);
-      expect($stickyState.inactives()[0] instanceof PathNode).toBeTruthy();
+      expect(typeof $stickyState.inactives()[0].$$state).toBe('function');
 
       done();
     });
@@ -553,7 +548,6 @@ describe('stickyState', function () {
       await testGo('A._1', { entered: ['A', 'A._1' ] });
       await testGo('A._2', { inactivated: [ 'A._1' ],  entered: 'A._2' });
       await testGo('A._1', { reactivated: 'A._1', inactivated: 'A._2' });
-//      resetTransitionLog();
       await testGo('A._2', { inactivated: 'A._1', exited: 'A._2', entered: 'A._2' }, { reload: "A._2" });
 
       done();
@@ -581,7 +575,7 @@ describe('stickyState', function () {
     });
   });
 
-  xdescribe("reset()", function() {
+  describe("$stickyStates.exitSticky()", function() {
     beforeEach(async function(done) {
       ssReset(getSimpleStates());
       await testGo('A._1');
@@ -590,37 +584,83 @@ describe('stickyState', function () {
       done();
     });
 
-    it("should exit the states being reset()", function() {
-      $stickyState.reset("A._1");
-      expect(tlog().exited).toEqual(['A._1']);
+    it("should exit the states being exitSticky()", (done) => {
+      resetTransitionLog();
+      $stickyState.exitSticky("A._1").then(() => {
+        let tLog = tlog();
+        expect(tLog.exited).toEqual(['A._1']);
+
+        done();
+      });
     });
 
-    it("should remove the reset state from the inactive list", function() {
-      expect($stickyState.getInactiveStates().length).toBe(1);
-      $stickyState.reset("A._1");
-      expect($stickyState.getInactiveStates().length).toBe(0);
+    it("should remove the state from the inactive list", async (done) => {
+      expect($stickyState.inactives().length).toBe(1);
+      await $stickyState.exitSticky("A._1");
+      expect($stickyState.inactives().length).toBe(0);
+
+      done();
     });
 
-    it("should return false for an unknown state", function() {
-      var result = $stickyState.reset("A.DOESNTEXIST");
-      expect(result).toBe(false);
-      expect($stickyState.getInactiveStates().length).toBe(1);
+    it("should throw if an unknown state is passed", () => {
+      expect(() => $stickyState.exitSticky("A.DOESNTEXIST"))
+          .toThrow(Error("State not found: A.DOESNTEXIST"));
+      expect($stickyState.inactives().length).toBe(1);
+      expect($stickyState.inactives()[0].name).toBe('A._1')
     });
 
-    it("should reset all inactive states if passed '*'", async function(done) {
-      expect($stickyState.getInactiveStates().length).toBe(1);
+    it("should throw if an non-inactive state is passed", () => {
+      expect(() => $stickyState.exitSticky("A._2"))
+          .toThrow(Error("State not inactive: A._2"));
+      expect($stickyState.inactives().length).toBe(1);
+      expect($stickyState.inactives()[0].name).toBe('A._1')
+    });
+
+    it("should reset all inactive states if passed no arguments", async (done) => {
+      expect($stickyState.inactives().length).toBe(1);
 
       await testGo('A._3');
-      expect($stickyState.getInactiveStates().length).toBe(2);
+      expect($stickyState.inactives().length).toBe(2);
 
-      $stickyState.reset("*");
-      expect($stickyState.getInactiveStates().length).toBe(0);
+      await $stickyState.exitSticky();
+      expect($stickyState.inactives().length).toBe(0);
 
       done();
     });
   });
 
-  describe("transitions to sibling of non-sticky inactive state", function() {
+  describe("$state.go `exitSticky` option", function() {
+    beforeEach(async function(done) {
+      ssReset(getSimpleStates());
+      await testGo('A._1');
+      await testGo('A._2');
+
+      done();
+    });
+
+    it("should exit an inactive state via `exitSticky` option", async (done) => {
+      await $state.go($state.current, {}, { exitSticky: 'A._1' });
+      expect($stickyState.inactives().length).toBe(0);
+
+      done();
+    });
+
+    it("should reset an inactive state via `exitSticky` option, while activating a different state", async (done) => {
+      await $state.go("A._3", {}, { exitSticky: 'A._1' });
+      expect($stickyState.inactives().length).toBe(1);
+      expect($stickyState.inactives()[0].name).toBe('A._2');
+
+      done();
+    });
+
+    it("should throw if the `exitSticky` option is part of the to path", () => {
+      expect(() => $state.go("A._1", {}, { exitSticky: 'A._1' })).toThrow(Error("Can not exit a sticky state that is currently active/activating: A._1"));
+      expect($stickyState.inactives().length).toBe(1);
+      expect($stickyState.inactives()[0].name).toBe('A._1');
+    });
+  });
+
+  describe("transitions to sibling of non-sticky inactive state", () => {
     // Tests for issue #217
 
     beforeEach(function() {
@@ -674,79 +714,3 @@ describe('stickyState', function () {
 
   });
 });
-
-// describe('stickyState+ui-sref-active', function () {
-//   var document;
-//
-//   beforeEach(module('ct.ui.router.extras.sticky', function($stickyStateProvider, $stateProvider) {
-//     // Load and capture $stickyStateProvider and $stateProvider
-//     _stickyStateProvider = $stickyStateProvider;
-//     _stateProvider = $stateProvider;
-//   }));
-//
-//   beforeEach(inject(function($document) {
-//     document = $document[0];
-//   }));
-//
-//   // Capture $injector.get, $state, and $q
-//   beforeEach(inject(function($injector) {
-//     $get = $injector.get;
-//     $state = $get('$state');
-//     $stickyState = $get('$stickyState');
-//     $q = $get('$q');
-//   }));
-//   var el, template;
-//
-//   describe('ui-sref-active', function () {
-//     beforeEach(function () {
-//       ssReset(getStatesForUiSref());
-//     });
-//
-//     // Set up base state heirarchy
-//     function getStatesForUiSref() {
-//       var newStates = {};
-//       newStates['main'] = { };
-//       newStates['A'] = { };
-//       newStates['A._1'] = {sticky: true, views: { '_1@A': {} } };
-//
-//       return newStates;
-//     }
-//
-//     it('should transition normally between non-sticky states', function () {
-//       testGo('main');
-//       testGo('A');
-//     });
-//
-//     it('should have "active" class on div when state A._1 is active', inject(function ($rootScope, $q, $compile, $timeout) {
-//       el = angular.element('' +
-//           '<div>' +
-//           '  <a class="" id="foo" ui-sref="A._1" ui-sref-active="active">Go to A._1</a>' +
-//           '  <a class="" id="bar" ui-sref="main" ui-sref-active="active">Go to main</a>' +
-//           '</div>');
-//       template = $compile(el)($rootScope);
-//       $rootScope.$digest();
-//
-//       expect(el.find("#foo").length).toBe(1);
-//       expect(el.find("#bar").length).toBe(1);
-//       expect(el.find("#baz").length).toBe(0);
-//
-//       expect(el.find("#bar").attr('class')).toBe('');
-//       expect(el.find("#foo").attr('class')).toBe('');
-//
-//       testGo('main');
-//       $timeout.flush();
-//       expect(el.find("#bar").attr('class')).toBe('active');
-//       expect(el.find("#foo").attr('class')).toBe('');
-//
-//       testGo('A');
-//       $timeout.flush();
-//       expect(el.find("#bar").attr('class')).toBe('');
-//       expect(el.find("#foo").attr('class')).toBe('');
-//
-//       testGo('A._1');
-//       $timeout.flush();
-//       expect(el.find("#bar").attr('class')).toBe('');
-//       expect(el.find("#foo").attr('class')).toBe('active');
-//     }));
-//   });
-// });

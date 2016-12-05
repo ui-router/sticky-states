@@ -1,6 +1,7 @@
 
-import { UIRouter, PathFactory, State, PathNode, TreeChanges, Transition, UIRouterPluginBase } from "ui-router-core";
-import { find, tail, inArray, removeFrom, pushTo, identity, anyTrueR, unnestR, uniqR, isFunction } from "ui-router-core";
+import { UIRouter, PathFactory, StateOrName, State, StateDeclaration, PathNode, TreeChanges, Transition, UIRouterPluginBase } from "ui-router-core";
+import { find, tail, isString, isArray, inArray, removeFrom, pushTo, identity, anyTrueR, assertMap, uniqR, isFunction } from "ui-router-core";
+import { defaultTransOpts } from "ui-router-core";
 
 declare module "ui-router-core/lib/state/interface" {
   interface StateDeclaration {
@@ -15,6 +16,10 @@ declare module "ui-router-core/lib/state/stateObject" {
 }
 
 declare module "ui-router-core/lib/transition/interface" {
+  interface TransitionOptions {
+    exitSticky: StateOrName[]|StateOrName;
+  }
+
   interface TreeChanges {
     inactivating?: PathNode[];
     reactivating?: PathNode[];
@@ -30,15 +35,16 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
 
     this._addCreateHook();
     this._addStateCallbacks();
+    this._addDefaultTransitionOption();
   }
 
   inactives() {
-    return this._inactives.slice();
+    return this._inactives.map(node => node.state.self);
   }
 
   private _addCreateHook() {
     this.router.transitionService.onCreate({}, (trans) => {
-      trans['_treeChanges'] = this._calculateStickyTreechanges(trans)
+      trans['_treeChanges'] = this._calculateStickyTreeChanges(trans)
     });
   }
 
@@ -62,53 +68,63 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
     this.router.transitionService.onFinish({}, onReactivate, { priority: 1000 });
   }
 
-  // TODO: "commit" all changes after transition.promise.then
-  private _calculateStickyTreechanges(trans: Transition): TreeChanges {
+
+  private _calculateExitSticky(tc: TreeChanges, trans: Transition) {
+    // Process the inactive states that are going to exit due to $stickyState.reset()
+    let exitSticky = trans.options().exitSticky || [];
+    if (!isArray(exitSticky)) exitSticky = [exitSticky];
+
+    let $state = trans.router.stateService;
+
+    let states: State[] = (exitSticky as any[])
+        .map(assertMap((stateOrName) => $state.get(stateOrName), (state) => "State not found: " + state))
+        .map(state => state.$$state());
+
+    let exitingInactives = states.map(assertMap(state => this._inactives.find(node => node.state === state), (state) => "State not inactive: " + state));
+    let exiting = this._inactives.filter(isDescendantOfAny(exitingInactives));
+
+    exiting.map(assertMap(node => !inArray(tc.to, node), (node) => "Can not exit a sticky state that is currently active/activating: " + node.state.name));
+
+    return exiting;
+  }
+
+  private _calculateStickyTreeChanges(trans: Transition): TreeChanges {
     let tc: TreeChanges = trans.treeChanges();
     tc.inactivating = [];
     tc.reactivating = [];
-
-    let inactives = this._inactives;
-    let reloadState = trans.options().reloadState;
 
     /****************
      * Process states that are about to be inactivated
      ****************/
 
     if (tc.entering.length && tc.exiting[0] && tc.exiting[0].state.sticky) {
-      let inactivating = tc.exiting;
-      tc.inactivating = inactivating;
+      tc.inactivating = tc.exiting;
       tc.exiting = [];
-
-      inactivating.forEach(pushTo(inactives));
     }
 
     /****************
      * Determine which states are about to be reactivated
      ****************/
 
-        // Simulate a transition where the fromPath is a clone of the toPath, but use the inactivated nodes
-        // This will calculate which inactive nodes that need to be exited/entered due to param changes
+    // Simulate a transition where the fromPath is a clone of the toPath, but use the inactivated nodes
+    // This will calculate which inactive nodes that need to be exited/entered due to param changes
     let inactiveFromPath = tc.retained.concat(tc.entering.map(node => this._getInactive(node) || null)).filter(identity);
-    let simulatedTC = PathFactory.treeChanges(inactiveFromPath, tc.to, reloadState);
+    let simulatedTC = PathFactory.treeChanges(inactiveFromPath, tc.to, trans.options().reloadState);
 
-    let shouldRewritePaths = ['retained', 'entering', 'exiting'].filter(path => !!simulatedTC[path].length).length > 0;
+    let shouldRewritePaths = ['retained', 'entering', 'exiting'].some(path => !!simulatedTC[path].length);
 
     if (shouldRewritePaths) {
       // The 'retained' nodes from the simulated transition's TreeChanges are the ones that will be reactivated.
       // (excluding the nodes that are in the original retained path)
       tc.reactivating = simulatedTC.retained.slice(tc.retained.length);
-      // TODO: "commit" all changes after transition.promise.then
-      tc.reactivating.forEach(removeFrom(inactives));
 
       // Entering nodes are the same as the simulated transition's entering
       tc.entering = simulatedTC.entering;
-      // TODO: "commit" all changes after transition.promise.then
-      tc.entering.forEach(removeFrom(inactives));
 
       // The simulatedTC 'exiting' nodes are inactives that are being exited because:
-      // - The params changed
-      // - The inactive is a child of the destination state
+      // - The inactive state's params changed
+      // - The inactive state is being reloaded
+      // - The inactive state is a child of the to state
       tc.exiting = tc.exiting.concat(simulatedTC.exiting);
 
       // Rewrite the to path
@@ -118,6 +134,8 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
     /****************
      * Determine which additional inactive states should be exited
      ****************/
+
+    let inactives = this._inactives;
 
     // Any inactive state whose parent state is exactly activated will be exited
     let childrenOfToState = inactives.filter(isChildOf(tail(tc.to)));
@@ -140,8 +158,13 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
 
     tc.exiting = orphans.concat(tc.exiting);
 
-    // TODO: "commit" all changes after transition.promise.then
-    tc.exiting.forEach(removeFrom(inactives));
+    // commit all changes to inactives after transition is successful
+    trans.onSuccess({}, () => {
+      tc.exiting.forEach(removeFrom(this._inactives));
+      tc.entering.forEach(removeFrom(this._inactives));
+      tc.reactivating.forEach(removeFrom(this._inactives));
+      tc.inactivating.forEach(pushTo(this._inactives));
+    });
 
     // console.log('inactives will be:', inactives.map(x => x.state.name));
 
@@ -149,7 +172,52 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
     // Object.keys(tcCopy).forEach(key => tcCopy[key] = tcCopy[key].map(x => x.state.name));
     // console.table(tcCopy);
 
+    let exitSticky = this._calculateExitSticky(tc, trans);
+    exitSticky.filter(notInArray(tc.exiting)).forEach(pushTo(tc.exiting));
+
     return tc;
+  }
+
+
+  private _addDefaultTransitionOption() {
+    defaultTransOpts.exitSticky = []
+  }
+
+  /**
+   * Exits inactive sticky state(s)
+   *
+   * #### Example:
+   * ```js
+   * $stickyState.exitSticky('inactivestate');
+   * ```
+   *
+   * ```js
+   * $stickyState.exitSticky([ 'inactivestate1', 'inactivestate2' ]);
+   * ```
+   *
+   * ```js
+   * // exit all inactive stickies
+   * $stickyState.exitSticky();
+   * ```
+   *
+   * ```js
+   * // exit all inactive stickies
+   * $stickyState.exitSticky($stickyState.inactives());
+   * ```
+   * @param states The state name, or an array of state names
+   */
+  exitSticky();
+  exitSticky(states: StateOrName);
+  exitSticky(states: StateOrName[]);
+  exitSticky(states?: any) {
+    let $state = this.router.stateService;
+    if (states === undefined) states = this._inactives.map(node => node.state.name);
+    if (isString(states)) states = [states];
+
+    return $state.go($state.current, {}, {
+      inherit: true,
+      exitSticky: states
+    });
   }
 
   _getInactive = (node) =>
