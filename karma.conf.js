@@ -1,5 +1,6 @@
 // Karma configuration file
 var karma = require('karma');
+var BeepPlugin = require('webpack-beep-plugin');
 
 module.exports = function (karma) {
   var config = {
@@ -35,6 +36,8 @@ module.exports = function (karma) {
 
     webpack: {
       devtool: 'inline-source-map',
+
+      plugins: [ new BeepPlugin() ],
 
       resolve: {
         modulesDirectories: ['node_modules'],

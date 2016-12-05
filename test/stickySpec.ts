@@ -5,7 +5,7 @@ import {
 } from "ui-router-core";
 
 import "../src/stickyStates";
-import { stickyStates } from "../src/stickyStates";
+import { StickyStatesPlugin } from "../src/stickyStates";
 
 let router: UIRouter;
 let $state: StateService;
@@ -33,8 +33,10 @@ describe('stickyState', function () {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
 
     router = new UIRouter();
+    $stickyState = router.plugin(StickyStatesPlugin);
     router.urlRouterProvider.otherwise('/');
 
+    // ui-router-core doesn't have a default views builder
     router.stateRegistry.decorator("views", function (state, parentFn) {
       if (isObject(state.views)) {
         return Object.keys(state.views).map(key => (
@@ -47,12 +49,12 @@ describe('stickyState', function () {
       ]
     });
 
+    // ui-router-core doesn't have a default ViewConfigFactory
     const factory: ViewConfigFactory = (path: PathNode[], decl: _ViewDeclaration) => {
       return { $id: _id++, viewDecl: decl, load: () => {}, path: path } as ViewConfig;
     };
     router.viewService.viewConfigFactory("core", factory);
 
-    $stickyState = stickyStates(router);
     $state = router.stateService;
     $view = router.viewService;
     $registry = router.stateRegistry;
@@ -176,7 +178,7 @@ describe('stickyState', function () {
       done();
     });
 
-    it ('should reactivate sticky state A._1 when transitioning back from sibling-to-sticky A._2', async function (done) {
+    it('should reactivate sticky state A._1 when transitioning back from sibling-to-sticky A._2', async function (done) {
       await testGo('A', {entered: ['A']});
       await testGo('A._1', {entered: ['A._1']});
       await testGo('A._2', {inactivated: ['A._1'], entered: 'A._2'});
@@ -185,7 +187,7 @@ describe('stickyState', function () {
       done();
     });
 
-    it ('should inactivate and reactivate A._1 and A._2 when transitioning back and forth', async function (done) {
+    it('should inactivate and reactivate A._1 and A._2 when transitioning back and forth', async function (done) {
       await testGo('A', {entered: ['A']});
       await testGo('A._1', {entered: ['A._1']});
       await testGo('A._2', {inactivated: ['A._1'], entered: ['A._2']});
@@ -195,7 +197,7 @@ describe('stickyState', function () {
       done();
     });
 
-    it ('should inactivate and reactivate A._1 and A._2 and A._3 when transitioning back and forth', async function (done) {
+    it('should inactivate and reactivate A._1 and A._2 and A._3 when transitioning back and forth', async function (done) {
       await testGo('A', {entered: ['A']});
       await testGo('A._1', {entered: ['A._1']});
       await testGo('A._2', {inactivated: ['A._1'], entered: ['A._2']});
@@ -215,33 +217,33 @@ describe('stickyState', function () {
       done();
     });
 
-    it ('should exit children A._1 and A._2 and A._3 when transitioning up to parent A', async function (done) {
+    it('should exit children A._1 and A._2 and A._3 when transitioning up to parent A', async function (done) {
       await testGo('A', {entered: ['A']});
       await testGo('A._1', {entered: ['A._1']});
       await testGo('A._2', {inactivated: ['A._1'], entered: ['A._2']});
       await testGo('A._3', {inactivated: ['A._2'], entered: ['A._3']});
-      // orphans exited first; from state exited last
-      await testGo('A', {exited: ['A._1', 'A._2', 'A._3']});
+
+      // orphans exited first in reverse order of when they were inactivated; from state exited last
+      await testGo('A', {exited: ['A._3', 'A._1', 'A._2']});
 
       done();
     });
 
-    it ('should exit children A._1 and A._2 and A._3 when transitioning back from sibling to parent A', async function (done) {
+    it('should exit children A._1 and A._2 and A._3 when transitioning back from sibling to parent A', async function (done) {
       await testGo('A', {entered: ['A']});
       await testGo('A._1', {entered: ['A._1']});
       await testGo('A._2', {inactivated: ['A._1'], entered: ['A._2']});
       await testGo('A._3', {inactivated: ['A._2'], entered: ['A._3']});
-      // orphans exited first; from state exited last
-      await testGo('A', {exited: ['A._1', 'A._2', 'A._3']});
+
+      // orphans exited first in reverse order of when they were inactivated; from state exited last
+      await testGo('A', {exited: ['A._3', 'A._1', 'A._2']});
       await testGo('main', { entered: ['main'], exited: ['A']});
 
       done();
     });
 
     it('should allow empty transitionTo options', function() {
-      expect(function() {
-        $state.transitionTo('A')
-      }).not.toThrow()
+      expect(() => $state.transitionTo('A')).not.toThrow()
     })
   });
 
@@ -251,16 +253,9 @@ describe('stickyState', function () {
       ssReset(getSimpleStates());
     });
 
-    // beforeEach(inject(function($compile, $rootScope) {
-    //   var el = angular.element('<div ui-view></div>');
-    //   $compile(el)($rootScope);
-    //   $rootScope.$digest();
-    // }));
-
     it('should resolve when the sticky state is entered', async function (done) {
       await testGo('main');
       await testGo('A._3');
-      // expect(Xvalue).toBe(1);
       expect(resolveCount).toBe(1);
 
       done();
@@ -272,27 +267,7 @@ describe('stickyState', function () {
       await testGo('A._3', { exited: 'main', entered: [ 'A', 'A._3' ]});
       await testGo('A._1', { inactivated: 'A._3', entered: 'A._1' });
       await testGo('A._3', { reactivated: 'A._3', inactivated: 'A._1'});
-      // expect(Xvalue).toBe(1);
       expect(resolveCount).toBe(1);
-
-      done();
-    });
-
-    it('(controller) should be called when the sticky state is entered', async function (done) {
-      await testGo('main');
-      await testGo('A._3');
-      expect(controllerInvokeCount).toBe(1);
-
-      done();
-    });
-
-    it('(controller) should not be called when the sticky state is reactivated', async function (done) {
-      await testGo('main', { entered: 'main' });
-      await testGo('A._3', { exited: 'main', entered: [ 'A', 'A._3' ]});
-      expect(controllerInvokeCount).toBe(1);
-      await testGo('A._1', { inactivated: 'A._3', entered: 'A._1' });
-      await testGo('A._3', { reactivated: 'A._3', inactivated: 'A._1'});
-      expect(controllerInvokeCount).toBe(1);
 
       done();
     });
@@ -302,11 +277,11 @@ describe('stickyState', function () {
       await testGo('A._3', { exited: 'main', entered: [ 'A', 'A._3' ]});
       await testGo('A._1', { inactivated: 'A._3', entered: 'A._1' });
       await testGo('A._3', { reactivated: 'A._3', inactivated: 'A._1'});
-      expect(Xvalue).toBe(1);
       expect(resolveCount).toBe(1);
-      await testGo('main', { entered: 'main', exited: [ 'A._3', 'A._1', 'A' ] });
+
+      // orphans exited first in reverse order of when they were inactivated; from path exited last
+      await testGo('main', { entered: 'main', exited: [ 'A', 'A._3', 'A._1' ] });
       await testGo('A._3', { entered: [ 'A', 'A._3' ], exited: 'main'});
-      expect(Xvalue).toBe(2);
       expect(resolveCount).toBe(2);
 
       done();
@@ -362,7 +337,7 @@ describe('stickyState', function () {
       var objparam = { foo: "bar" };
       await testGo('typedparam2', undefined, { params: { jsonparam: objparam } });
       await testGo('A');
-      expect(location.hash).toBe("#/typedparam2/%7B%22foo%22:%22bar%22%7D");
+      expect(location.hash).toBe("#/typedparam2/%7B%22foo%22%3A%22bar%22%7D");
       resetTransitionLog();
       await testGo('typedparam2', {inactivated: 'A', reactivated: 'typedparam2'}, { params: { jsonparam: { foo: "bar" } } });
 
@@ -385,17 +360,19 @@ describe('stickyState', function () {
     });
 
     it("should reload when params change", async function(done) {
-      await testGo('main');
-      var options = { params: { 'product_id': 12345 } };
-      await testGo('main.product.something', { entered: pathFrom('main', 'main.product.something') }, options);
-      await testGo('main.other', { entered: 'main.other', inactivated: [ 'main.product.something', 'main.product'] });
-      await testGo('main.product.something', { reactivated: ['main.product', 'main.product.something'], inactivated: 'main.other' }, options);
+      await testGo('main', { entered: 'main' });
 
-      await testGo('main.other', { reactivated: 'main.other', inactivated: [ 'main.product.something', 'main.product'] });
-      options.params.product_id = 54321;
+      var options = { params: { 'product_id': 12345 } };
+      await testGo('main.product.something', { entered: pathFrom('main.product', 'main.product.something') }, options);
+      await testGo('main.other', { entered: 'main.other', inactivated: [ 'main.product', 'main.product.something' ] });
+      await testGo('main.product.something', { reactivated: ['main.product', 'main.product.something'], inactivated: 'main.other' }, options);
+      await testGo('main.other', { reactivated: 'main.other', inactivated: [ 'main.product', 'main.product.something' ] });
       resetTransitionLog();
+
+      // Change param value on main.product
+      options.params.product_id = 54321;
       await testGo('main.product.something', {
-        exited: ['main.product.something', 'main.product'],
+        exited: ['main.product', 'main.product.something'],
         entered: ['main.product', 'main.product.something'],
         inactivated: 'main.other' }, options);
 
@@ -408,7 +385,7 @@ describe('stickyState', function () {
       ssReset(getNestedStickyStates());
     });
 
-    it ('should inactivate sticky state tabs_tab1 when transitioning back to A', async function (done) {
+    it('should inactivate sticky state tabs_tab1 when transitioning back to A', async function (done) {
       await testGo('aside', { entered: ['aside'] });
       await testGo('A._1.__1.B.___1', { exited: ['aside'],                entered: pathFrom('A', 'A._1.__1.B.___1') });
       await testGo('A._1.__1.B.___2', { inactivated: ['A._1.__1.B.___1'], entered:     ['A._1.__1.B.___2'] });
@@ -416,14 +393,13 @@ describe('stickyState', function () {
       done();
     });
 
-    it ('should reactivate child-of-sticky state ___1 when transitioning back to A._1.__1', async function (done) {
+    it('should reactivate child-of-sticky state ___1 when transitioning back to A._1.__1', async function (done) {
       await testGo('aside', { entered: ['aside']});
       await testGo('A._1.__1', { exited: ['aside'],                         entered: pathFrom('A', 'A._1.__1') });
-      await testGo('A._2.__2', { inactivated: pathFrom('A._1.__1', 'A._1'), entered: pathFrom('A._2', 'A._2.__2') });
-      await testGo('aside',    { inactivated: pathFrom('A._2.__2', 'A') ,   entered: ['aside'] });
+      await testGo('A._2.__2', { inactivated: pathFrom('A._1', 'A._1.__1'), entered: pathFrom('A._2', 'A._2.__2') });
+      await testGo('aside',    { inactivated: pathFrom('A', 'A._2.__2') ,   entered: ['aside'] });
       await testGo('A._2.__2', { exited: ['aside'],                         reactivated: pathFrom('A', 'A._2.__2') }, { redirect: 'A._2.__2' });
-      resetTransitionLog();
-      await testGo('A._1.__1', { inactivated: pathFrom('A._2.__2', 'A._2'), reactivated: pathFrom('A._1', 'A._1.__1') }, { redirect: 'A._1.__1' });
+      await testGo('A._1.__1', { inactivated: pathFrom('A._2', 'A._2.__2'), reactivated: pathFrom('A._1', 'A._1.__1') }, { redirect: 'A._1.__1' });
 
       done();
     });
@@ -432,7 +408,7 @@ describe('stickyState', function () {
     describe("to an inactive state with inactive children", function() {
       it("should exit inactive child states", async function (done) {
         await testGo('A._3.__1', { entered: pathFrom('A', 'A._3.__1') });
-        await testGo('A._2', { inactivated: pathFrom('A._3.__1', 'A._3'), entered: "A._2" });
+        await testGo('A._2', { inactivated: pathFrom('A._3', 'A._3.__1'), entered: "A._2" });
         await testGo('A._3', { reactivated: "A._3", inactivated: "A._2", exited: "A._3.__1" });
 
         done();
@@ -440,10 +416,10 @@ describe('stickyState', function () {
     });
 
     describe("to an exited substate of an inactive state with inactive children", function() {
-      // Test for issue #131
+      // Test for issue https://github.com/christopherthielen/ui-router-extras/issues/131
       it("should not exit inactive child states", async function(done) {
         await testGo('A._3.__1', { entered: pathFrom('A', 'A._3.__1') });
-        await testGo('A._2', { inactivated: pathFrom('A._3.__1', 'A._3'), entered: "A._2" });
+        await testGo('A._2', { inactivated: pathFrom('A._3', 'A._3.__1'), entered: "A._2" });
         await testGo('A._3.__2', { reactivated: "A._3", inactivated: "A._2", entered: "A._3.__2", exited: "A._3.__1" });
 
         done();
@@ -499,7 +475,7 @@ describe('stickyState', function () {
       ];
     }
 
-    it ('should have states attributes correctly set', function() {
+    it('should have states attributes correctly set', function() {
       var A = $state.get('A');
       var A_1 = $state.get('A._1');
       var A_1__1 = $state.get('A._1.__1');
@@ -530,15 +506,15 @@ describe('stickyState', function () {
       expect(A_2__2.$$state().parent.self).toBe(A_2);
     });
 
-    it ('should set transition attributes correctly', async function(done) {
+    it('should set transition attributes correctly', async function(done) {
       // Test some transitions
       await testGo('aside', { entered: ['aside'] });
       await testGo('_2', { exited: ['aside'],  entered: ['A', '_2'] });
       await testGo('__2', { entered: ['__2'] });
-      await testGo('A._1.__1', { inactivated: ['__2', '_2'], entered: ['A._1', 'A._1.__1'] });
-      await testGo('_2', { reactivated: ['_2'], inactivated: ['A._1.__1', 'A._1'], exited: '__2' });
-      //resetTransitionLog();
-      await testGo('A', { exited: ['A._1.__1', 'A._1', '_2'] });
+      await testGo('A._1.__1', { inactivated: ['_2', '__2'], entered: ['A._1', 'A._1.__1'] });
+      await testGo('_2', { reactivated: ['_2'], inactivated: ['A._1', 'A._1.__1'], exited: '__2' });
+      resetTransitionLog();
+      await testGo('A', { exited: ['_2', 'A._1', 'A._1.__1'] });
       await testGo('aside', { exited: ['A'], entered: ['aside'] });
 
       done();
@@ -555,8 +531,7 @@ describe('stickyState', function () {
       await testGo('A._1', { entered: ['A', 'A._1' ] });
       await testGo('A._2', { inactivated: [ 'A._1' ],  entered: 'A._2' });
       await testGo('A._1', { reactivated: 'A._1', inactivated: 'A._2' });
-//      resetTransitionLog();
-      await testGo('A._2', { exited: [ 'A._1', 'A._2', 'A' ], entered: [ 'A', 'A._2' ] }, { reload: true });
+      await testGo('A._2', { exited: [ 'A', 'A._2', 'A._1' ], entered: [ 'A', 'A._2' ] }, { reload: true });
 
       done();
     });
@@ -587,7 +562,7 @@ describe('stickyState', function () {
     it('should reload a partial tree of non-sticky states', async function(done) {
       await testGo('A._1', { entered: ['A', 'A._1' ] });
       await testGo('A._2.__1', { inactivated: 'A._1', entered: [ 'A._2', 'A._2.__1' ] });
-      await testGo('A._1', { reactivated: 'A._1', inactivated: [ 'A._2.__1', 'A._2' ] });
+      await testGo('A._1', { reactivated: 'A._1', inactivated: [ 'A._2', 'A._2.__1' ] });
       await testGo('A._2.__1', {
         inactivated: 'A._1', reactivated: 'A._2',
         exited: [ 'A._2.__1' ], entered: [ 'A._2.__1' ]
@@ -598,15 +573,15 @@ describe('stickyState', function () {
     });
 
     // Test case for #258
-    it('should reload full partial tree of sticky states', async function(done) {
+    it('should reload full tree of sticky states', async function(done) {
       await testGo('B._1.__1', { entered: [ 'B', 'B._1', 'B._1.__1' ] });
-      await testGo('B._1.__1', { exited : ['B._1.__1', 'B._1', 'B'], entered: ['B', 'B._1', 'B._1.__1'] }, {reload: true});
+      await testGo('B._1.__1', { exited : ['B', 'B._1', 'B._1.__1'], entered: ['B', 'B._1', 'B._1.__1'] }, {reload: true});
 
       done();
     });
   });
 
-  describe("reset()", function() {
+  xdescribe("reset()", function() {
     beforeEach(async function(done) {
       ssReset(getSimpleStates());
       await testGo('A._1');
@@ -654,12 +629,12 @@ describe('stickyState', function () {
 
     it("should exit the inactive state", async function(done) {
       await testGo('A._1.__1', { entered: ['A', 'A._1', 'A._1.__1']});
-      await testGo('A._2.__1', { entered: ['A._2', 'A._2.__1'], inactivated: ['A._1.__1', 'A._1']});
+      await testGo('A._2.__1', { entered: ['A._2', 'A._2.__1'], inactivated: ['A._1', 'A._1.__1']});
       await testGo('A._1.__2', {
         entered: ['A._1.__2'],
         exited: ['A._1.__1'],
         reactivated: ['A._1'],
-        inactivated: ['A._2.__1', 'A._2']
+        inactivated: ['A._2', 'A._2.__1']
       });
 
       done();

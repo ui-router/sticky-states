@@ -1,6 +1,6 @@
 
 import { UIRouter, PathFactory, State, PathNode, TreeChanges, Transition, UIRouterPluginBase } from "ui-router-core";
-import { find, tail, curry, inArray, removeFrom, pushTo, identity, anyTrueR, unnestR, uniqR, isFunction } from "ui-router-core";
+import { find, tail, inArray, removeFrom, pushTo, identity, anyTrueR, unnestR, uniqR, isFunction } from "ui-router-core";
 
 declare module "ui-router-core/lib/state/interface" {
   interface StateDeclaration {
@@ -21,7 +21,7 @@ declare module "ui-router-core/lib/transition/interface" {
   }
 }
 
-export class StickStatesPlugin extends UIRouterPluginBase {
+export class StickyStatesPlugin extends UIRouterPluginBase {
   name = "stickystates";
   private _inactives: PathNode[] = [];
 
@@ -48,6 +48,7 @@ export class StickStatesPlugin extends UIRouterPluginBase {
     const onInactivate = (transition: Transition) =>
         transition.treeChanges('inactivating')
             .filter(node => isFunction(node.state['onInactivate']))
+            .reverse()
             .forEach(node => node.state['onInactivate'](transition, node.state.self));
 
     this.router.transitionService.onStart({}, onInactivate, { priority: -1000 });
@@ -67,23 +68,8 @@ export class StickStatesPlugin extends UIRouterPluginBase {
     tc.inactivating = [];
     tc.reactivating = [];
 
-    let fromPath: PathNode[] = tc.from;
-    let toPath: PathNode[] = tc.to;
-
     let inactives = this._inactives;
     let reloadState = trans.options().reloadState;
-
-    // console.log('inactives are currently:', inactives.map(x => x.state.name));
-    // console.log('inactives are currently:', inactives.map(x => x.views));
-
-    let inactiveStickies = inactives.filter(node => node.state.sticky);
-    let inactiveNonStickies = inactives.filter(node => !node.state.sticky);
-    let stickyDescendents = inactiveStickies.map(sticky => {
-      let isDescendantOfSticky = isDescendantOf(sticky.state);
-      let inactiveChildren = inactives.filter(node => isDescendantOfSticky(node.state));
-      return { sticky, inactiveChildren };
-    });
-
 
     /****************
      * Process states that are about to be inactivated
@@ -104,16 +90,21 @@ export class StickStatesPlugin extends UIRouterPluginBase {
         // Simulate a transition where the fromPath is a clone of the toPath, but use the inactivated nodes
         // This will calculate which inactive nodes that need to be exited/entered due to param changes
     let inactiveFromPath = tc.retained.concat(tc.entering.map(node => this._getInactive(node) || null)).filter(identity);
-    let simulatedTC = PathFactory.treeChanges(inactiveFromPath, toPath, reloadState);
+    let simulatedTC = PathFactory.treeChanges(inactiveFromPath, tc.to, reloadState);
 
-    // The 'retained' nodes from the simulated transition's TreeChanges are the ones that will be reactivated.
-    // (excluding the nodes that are in the original retained path)
-    let reactivated = simulatedTC.retained.slice(tc.retained.length);
+    let shouldRewritePaths = ['retained', 'entering', 'exiting'].filter(path => !!simulatedTC[path].length).length > 0;
 
-    if (reactivated.length) {
-      tc.reactivating = reactivated;
+    if (shouldRewritePaths) {
+      // The 'retained' nodes from the simulated transition's TreeChanges are the ones that will be reactivated.
+      // (excluding the nodes that are in the original retained path)
+      tc.reactivating = simulatedTC.retained.slice(tc.retained.length);
+      // TODO: "commit" all changes after transition.promise.then
+      tc.reactivating.forEach(removeFrom(inactives));
+
       // Entering nodes are the same as the simulated transition's entering
       tc.entering = simulatedTC.entering;
+      // TODO: "commit" all changes after transition.promise.then
+      tc.entering.forEach(removeFrom(inactives));
 
       // The simulatedTC 'exiting' nodes are inactives that are being exited because:
       // - The params changed
@@ -122,46 +113,41 @@ export class StickStatesPlugin extends UIRouterPluginBase {
 
       // Rewrite the to path
       tc.to = tc.retained.concat(tc.reactivating).concat(tc.entering);
-
-      // TODO: "commit" all changes after transition.promise.then
-      reactivated.forEach(removeFrom(inactives));
-      tc.entering.forEach(removeFrom(inactives));
     }
 
     /****************
      * Determine which additional inactive states should be exited
      ****************/
 
-    const _state = (node: PathNode) => node.state;
-    let toNode = tail(tc.to);
-    let exitingStates = tc.exiting.map(_state);
-    let toStates = tc.to.map(_state);
+    // Any inactive state whose parent state is exactly activated will be exited
+    let childrenOfToState = inactives.filter(isChildOf(tail(tc.to)));
 
-    // Any sticky state whose parent state is exited will be exited
-    // Any sticky state whose parent state is exactly activated will be exited
-    let exitingStickies = inactiveStickies.filter(node => {
-      return inArray(exitingStates, node.state.parent) || toNode.state === node.state.parent;
-    });
+    // Any inactive non-sticky state whose parent state is activated (and is itself not activated) will be exited
+    let childrenOfToPath = inactives.filter(isChildOfAny(tc.to))
+        .filter(notInArray(tc.to))
+        .filter(node => !node.state.sticky);
+
+    let exitingChildren = childrenOfToState.concat(childrenOfToPath).filter(notInArray(tc.exiting));
+
+    let exitingRoots = tc.exiting.concat(exitingChildren);
 
     // Any inactive descendant of an exiting state will be exited
-    let descendantOfExiting = inactives.filter(inactive => isDescendantOfAny(exitingStates)(inactive.state));
+    let orphans = inactives.filter(isDescendantOfAny(exitingRoots))
+        .filter(notInArray(exitingRoots))
+        .concat(exitingChildren)
+        .reduce<PathNode[]>(uniqR, [])
+        .sort(nodeDepthThenInactivateOrder(inactives));
 
-    // Any inactive descendant of the states being reactivated or entered (that itself isn't being re-activated) will be exited
-    let descendantOfReactivating = inactives.filter(inactive => !inArray(tc.reactivating, inactive))
-        .filter(inactive => isDescendantOfAny(tc.reactivating.map(_state))(inactive.state));
+    tc.exiting = orphans.concat(tc.exiting);
 
-    let exiting = [exitingStickies, descendantOfExiting, descendantOfReactivating].reduce(unnestR, []).reduce(uniqR, []);
-    exiting.forEach(removeFrom(inactives));
-    tc.exiting = exiting.concat(tc.exiting);
+    // TODO: "commit" all changes after transition.promise.then
+    tc.exiting.forEach(removeFrom(inactives));
 
     // console.log('inactives will be:', inactives.map(x => x.state.name));
-    // console.log('inactives will be:', inactives.map(x => x.views));
 
-    // console.log('tc', tc);
-
-    if (tc.to.some(node => !node.views)) {
-      // console.log("to states views:", tc.to.map(x => x.views));
-    }
+    // let tcCopy: any = Object.assign({}, tc);
+    // Object.keys(tcCopy).forEach(key => tcCopy[key] = tcCopy[key].map(x => x.state.name));
+    // console.table(tcCopy);
 
     return tc;
   }
@@ -170,20 +156,43 @@ export class StickStatesPlugin extends UIRouterPluginBase {
     node && find(this._inactives, n => n.state === node.state);
 }
 
+const notInArray = (arr: any[]) => (item) => !inArray(arr, item);
+
+const isChildOf = (parent: PathNode) =>
+    (node: PathNode) =>
+    node.state.parent === parent.state;
+
+const isChildOfAny = (_parents: PathNode[]) => {
+    return (node: PathNode) =>
+        _parents.map(parent => isChildOf(parent)(node)).reduce(anyTrueR, false);
+};
+
 const ancestorPath = (state: State) =>
     state.parent ? ancestorPath(state.parent).concat(state) : [state];
 
-const isDescendantOf = (ancestor: State) =>
-    (state: State) =>
-        ancestorPath(state).indexOf(ancestor) !== -1;
+const isDescendantOf = (_ancestor: PathNode) => {
+    let ancestor = _ancestor.state;
+    return (node: PathNode) =>
+        ancestorPath(node.state).indexOf(ancestor) !== -1;
+};
 
-const isDescendantOfAny = (ancestors: State[]) =>
-    (state: State) =>
-        ancestors.map(ancestor => isDescendantOf(ancestor)(state)).reduce(anyTrueR, false);
-
+const isDescendantOfAny = (ancestors: PathNode[]) =>
+    (node: PathNode) =>
+        ancestors.map(ancestor => isDescendantOf(ancestor)(node))
+            .reduce(anyTrueR, false);
 
 function findStickyAncestor(state: State) {
   return state.sticky ? state : findStickyAncestor(state.parent);
 }
 
-
+/**
+ * Sorts fn that sorts by:
+ * 1) node depth (how deep a state is nested)
+ * 2) the order in which the state was inactivated (later in wins)
+ */
+function nodeDepthThenInactivateOrder(inactives: PathNode[]) {
+  return function(l: PathNode, r: PathNode): number {
+    let depthDelta = (l.state.path.length - r.state.path.length);
+    return depthDelta !== 0 ? depthDelta : inactives.indexOf(r) - inactives.indexOf(l);
+  }
+}
