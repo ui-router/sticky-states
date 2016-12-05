@@ -1,6 +1,6 @@
 import { getTestGoFn, addCallbacks, resetTransitionLog, pathFrom, equalityTester, tlog } from "./util"
 import {
-    UIRouter, StateService, StateRegistry, StateDeclaration, ViewService,
+    UIRouter, StateService, StateRegistry, StateDeclaration, ViewService, TransitionService,
     PathNode, _ViewDeclaration, isObject, unnestR, ViewConfigFactory, ViewConfig
 } from "ui-router-core";
 
@@ -9,6 +9,7 @@ import { StickyStatesPlugin } from "../src/stickyStates";
 
 let router: UIRouter;
 let $state: StateService;
+let $transitions: TransitionService;
 let $view: ViewService;
 let $registry: StateRegistry;
 let $stickyState: StickyStatesPlugin;
@@ -51,6 +52,7 @@ describe('stickyState', function () {
     router.viewService.viewConfigFactory("core", factory);
 
     $state = router.stateService;
+    $transitions = router.transitionService;
     $view = router.viewService;
     $registry = router.stateRegistry;
     router.stateRegistry.stateQueue.autoFlush($state);
@@ -658,6 +660,106 @@ describe('stickyState', function () {
       expect($stickyState.inactives().length).toBe(1);
       expect($stickyState.inactives()[0].name).toBe('A._1');
     });
+  });
+
+  describe('TransitionService', () => {
+
+    describe('onInactivate hook', () => {
+      beforeEach(() => ssReset(getSimpleStates()));
+
+      it('should be a function on TransitionService', () => {
+        expect($transitions.onInactivate).toBeDefined();
+        expect(typeof $transitions.onInactivate).toBe('function');
+      });
+
+      it('should accept a criteria obj with `inactivate` property, and a state hook fn', () => {
+        expect(() => $transitions.onInactivate({ inactivating: 'A._1' }, (trans, state) => { })).not.toThrow();
+      });
+
+      it('should fire a hook function when a state is inactivated', async (done) => {
+        let log = [];
+
+        $transitions.onInactivate({ inactivating: 'A._1' }, (trans, state) => {
+          log.push(state.name);
+        });
+
+        await testGo('A._1', { entered: ['A', 'A._1']});
+        expect(log).toEqual([]);
+
+        await testGo('A._2', { entered: 'A._2', inactivated: 'A._1' });
+        expect(log).toEqual(['A._1']);
+
+        done();
+      });
+    });
+
+    describe('onInactive function defined on a state', () => {
+      it('should fire when the state is inactivated', async (done) => {
+        let log = [], states = getSimpleStates();
+        states.find(state => state.name === 'A._1').onInactivate = (trans, state) => { log.push(state.name); };
+        states.forEach(state => $registry.register(state));
+        
+        await $state.go('A._1');
+        expect(log).toEqual([]);
+  
+        await $state.go('A._2');
+        expect(log).toEqual(['A._1']);
+  
+        done();
+      });
+    });
+
+    describe('onReactivate hook', () => {
+      beforeEach(() => ssReset(getSimpleStates()));
+
+      it('should be a function on TransitionService', () => {
+        expect($transitions.onReactivate).toBeDefined();
+        expect(typeof $transitions.onReactivate).toBe('function');
+      });
+
+      it('should accept a criteria obj with `reactivate` property, and a state hook fn', () => {
+        expect(() => $transitions.onReactivate({ reactivating: 'A._1' }, (trans, state) => { })).not.toThrow();
+      });
+
+      it('should fire a hook function when a state is reactivated', async (done) => {
+        let log = [];
+
+        $transitions.onReactivate({ reactivating: 'A._1' }, (trans, state) => {
+          log.push(state.name);
+        });
+
+        await testGo('A._1', { entered: ['A', 'A._1']});
+        expect(log).toEqual([]);
+
+        await testGo('A._2', { entered: 'A._2', inactivated: 'A._1' });
+        expect(log).toEqual([]);
+
+        await testGo('A._1', { inactivated: 'A._2', reactivated: 'A._1' });
+        expect(log).toEqual(['A._1']);
+
+        done();
+      });
+    });
+
+    describe('onReactivate function defined on a state', () => {
+      it('should fire when the state is reactivated', async (done) => {
+        let log = [], states = getSimpleStates();
+        states.find(state => state.name === 'A._1').onReactivate = (trans, state) => { log.push(state.name); };
+        states.forEach(state => $registry.register(state));
+
+        await $state.go('A._1');
+        expect(log).toEqual([]);
+
+        await $state.go('A._2');
+        expect(log).toEqual([]);
+
+        await $state.go('A._1');
+        expect(log).toEqual(['A._1']);
+
+        done();
+      });
+    });
+
   });
 
   describe("transitions to sibling of non-sticky inactive state", () => {

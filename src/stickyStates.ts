@@ -1,17 +1,31 @@
 
-import { UIRouter, PathFactory, StateOrName, State, StateDeclaration, PathNode, TreeChanges, Transition, UIRouterPluginBase } from "ui-router-core";
+import { UIRouter, PathFactory, StateOrName, State, StateDeclaration, PathNode, TreeChanges } from "ui-router-core";
+import { Transition, UIRouterPluginBase, TransitionHookPhase, TransitionHookScope, TransitionServicePluginAPI } from "ui-router-core";
+import { HookMatchCriteria, TransitionStateHookFn, HookRegOptions, PathType } from "ui-router-core";
+
 import { find, tail, isString, isArray, inArray, removeFrom, pushTo, identity, anyTrueR, assertMap, uniqR, isFunction } from "ui-router-core";
 import { defaultTransOpts } from "ui-router-core";
 
 declare module "ui-router-core/lib/state/interface" {
   interface StateDeclaration {
     sticky?: boolean;
+    onInactivate?: TransitionStateHookFn;
+    onReactivate?: TransitionStateHookFn;
   }
 }
 
 declare module "ui-router-core/lib/state/stateObject" {
   interface State {
     sticky?: boolean;
+    onInactivate?: TransitionStateHookFn;
+    onReactivate?: TransitionStateHookFn;
+  }
+}
+
+declare module "ui-router-core/lib/transition/transitionService" {
+  interface TransitionService {
+    onInactivate: (criteria: HookMatchCriteria, callback: TransitionStateHookFn, options?: HookRegOptions) => Function;
+    onReactivate: (criteria: HookMatchCriteria, callback: TransitionStateHookFn, options?: HookRegOptions) => Function;
   }
 }
 
@@ -24,15 +38,37 @@ declare module "ui-router-core/lib/transition/interface" {
     inactivating?: PathNode[];
     reactivating?: PathNode[];
   }
+
+  export interface IMatchingNodes {
+    inactivating: PathNode[];
+    reactivating: PathNode[];
+  }
+
+  export interface PathTypes {
+    inactivating: PathType;
+    reactivating: PathType;
+  }
+
+  export interface HookMatchCriteria {
+    /** A [[HookMatchCriterion]] to match any state that would be inactivating */
+    inactivating?: HookMatchCriterion;
+    /** A [[HookMatchCriterion]] to match any state that would be reactivating */
+    reactivating?: HookMatchCriterion;
+  }
 }
 
 export class StickyStatesPlugin extends UIRouterPluginBase {
   name = "stickystates";
   private _inactives: PathNode[] = [];
+  private pluginAPI: TransitionServicePluginAPI;
 
   constructor(public router: UIRouter) {
     super();
 
+    this.pluginAPI = router.transitionService._pluginapi;
+
+    this._defineStickyPaths();
+    this._defineStickyEvents();
     this._addCreateHook();
     this._addStateCallbacks();
     this._addDefaultTransitionOption();
@@ -48,24 +84,27 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
     });
   }
 
+  private _defineStickyPaths() {
+    let paths = this.pluginAPI._getPathTypes();
+    this.pluginAPI._definePathType("inactivating", TransitionHookScope.STATE);
+    this.pluginAPI._definePathType("reactivating", TransitionHookScope.STATE);
+  }
+
+  private _defineStickyEvents() {
+    let paths = this.pluginAPI._getPathTypes();
+    this.pluginAPI._defineEvent("onInactivate", TransitionHookPhase.ASYNC, 5, paths.inactivating, true);
+    this.pluginAPI._defineEvent("onReactivate", TransitionHookPhase.ASYNC, 35, paths.reactivating);
+  }
+
+  // Process state.onInactivate or state.onReactivate callbacks
   private _addStateCallbacks() {
+    var inactivateCriteria = { inactivating: state => !!state.onInactivate };
+    this.router.transitionService.onInactivate(inactivateCriteria, (trans: Transition, state: State) =>
+        state.onInactivate(trans, state));
 
-    // Process state.onInactivate callbacks
-    const onInactivate = (transition: Transition) =>
-        transition.treeChanges('inactivating')
-            .filter(node => isFunction(node.state['onInactivate']))
-            .reverse()
-            .forEach(node => node.state['onInactivate'](transition, node.state.self));
-
-    this.router.transitionService.onStart({}, onInactivate, { priority: -1000 });
-
-    // Process state.onReactivate callbacks
-    const onReactivate = (transition: Transition) =>
-        transition.treeChanges('reactivating')
-            .filter(node => isFunction(node.state['onReactivate']))
-            .forEach(node => node.state['onReactivate'](transition, node.state.self));
-
-    this.router.transitionService.onFinish({}, onReactivate, { priority: 1000 });
+    var reactivateCriteria = { reactivating: state => !!state.onReactivate };
+    this.router.transitionService.onReactivate(reactivateCriteria, (trans: Transition, state: State) =>
+        state.onReactivate(trans, state));
   }
 
 
