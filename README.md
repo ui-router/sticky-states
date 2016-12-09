@@ -32,7 +32,7 @@ A transition back to the inactivate state will reactivate it.
 Sticky states works requires `ui-router-core` 2.0.0 or above.
 Run `npm ls` to check the version of `ui-router-core` included with the UI-Router distribution for your framework
 
-### Add Plugin
+### 1) Add Plugin
 
 #### ng1
 
@@ -78,6 +78,26 @@ let routerConfig = (router) => router.plugin(StickyStatesPlugin);
 
 return <UIRouterReact config={routerConfig}/>;
 ```
+
+
+### 2) Mark a state as sticky
+
+```js
+let adminModule = {
+  name: 'admin',
+  sticky: true,
+  component: AdminComponent
+}
+```
+
+The AdminComponent should remain active even if a sibling state is activated.
+
+### 3) Show/Hide the sticky component
+
+When a sticky state is inactive, it's often desired to hide it from the UI.
+This can be achieved using [`StateService.includes`](https://ui-router.github.io/docs/latest/classes/state.stateservice.html#includes).
+
+In some cases, `ui-sref-active` may also be used to toggle a class.
 
 #### More
 
