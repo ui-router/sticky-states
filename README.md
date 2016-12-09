@@ -82,22 +82,27 @@ return <UIRouterReact config={routerConfig}/>;
 
 ### 2) Mark a state as sticky
 
+The sticky state's view must have its own unique ui-view (not shared by other states).
+Create and target a named ui-view.
+
 ```js
 let adminModule = {
   name: 'admin',
   sticky: true,
-  component: AdminComponent
+  views: {
+    admin: { component: AdminComponent }
+  }
 }
 ```
 
-The AdminComponent should remain active even if a sibling state is activated.
+The AdminComponent should remain active in the `ui-view` named `admin`, even if a sibling state is activated.
 
 ### 3) Show/Hide the sticky component
 
-When a sticky state is inactive, it's often desired to hide it from the UI.
+When a sticky state is inactive, it's often desired to hide the contents from the UI.
 This can be achieved using [`StateService.includes`](https://ui-router.github.io/docs/latest/classes/state.stateservice.html#includes).
 
-In some cases, `ui-sref-active` may also be used to toggle a class.
+In some cases, `ui-sref-active` may also be used to toggle a class on the named `ui-view`.
 
 #### More
 
