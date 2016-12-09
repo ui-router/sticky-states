@@ -1,31 +1,87 @@
-# Deep State Redirect
+# Sticky States
 
-### DSR for UI-Router 1.0 &nbsp;[![Build Status](https://travis-ci.org/christopherthielen/deep-state-redirect.svg?branch=master)](https://travis-ci.org/christopherthielen/deep-state-redirect)
-
-With Deep State Redirect, a parent state remembers whatever child state was last activated.
-When the user directly reactivates the parent state, they are redirected to the nested state (which was previously activated).
-
+### Sticky States for UI-Router 1.0 &nbsp;[![Build Status](https://travis-ci.org/ui-router/sticky-states.svg?branch=master)](https://travis-ci.org/ui-router/sticky-states)
 
 ## Overview and Use Case
 
-Deep State Redirect (DSR) is a marker you can add to a state definition.
+### Sticky States allows two or more trees of states to run concurrently along side each other.
 
-When a child state of the DSR marked state is activated, UI-Router Extras remembers the child and its parameters.
-The most-recently-activate child is remembered no matter where the user navigates in the state tree.
-When the DSR marked state is directly activated, UI-Router Extras will redirect to the remembered child state and parameters.
+The initial use case for this functionality is to implement "tabs" for application modules.
+Using Sticky States, a single app can implement one state tree for each tab, and have them operate at the same time, in parallel to each other.
+Each tab is implemented as its own UI-Router state tree.
+While one tab is active, the other tab is inactivated, but can be reactivated without losing any work in progress.
 
-One use case for DSR is a tabbed application.
-Each tab might contain an application module.
-Each tabs' state is marked as deepStateRedirect.
-When the user navigates into the tab, and drills down to a substate, DSR will remember the substate.
-The user can then navigate to other tabs (or somewhere else completely).
-When they click the original tab again, it will transition to the remembered ehild state and parameters of that tab, making it appear that the tab was never destructed.
+For the tabs use case, Sticky States work best along with [Deep State Redirect](//ui-router.github.io/deep-state-redirect)
 
-Deep State Redirect can be used with StickyStates, or on its own.
-If used with a Sticky State, the states will be reactivated, and the DOM will be unchanged (as opposed to the states being re-entered and controllers re-initialized)
+### Sticky State Lifecycle
+
+
+A Sticky State is the root of a UI-Router state tree which can continue running even after it is "exited".
+The sticky state (and its children) have a different lifecycle than normal states.
+The views of a Sticky State (and all activated substates) are retained until one of two things happen:
+
+- The parent of the sticky state is exited
+- The parent of the sticky state is directly activated
+
+If a sibling of the sticky state (or a child of a sibling) is activated, the sticky state tree will "inactivate".
+A transition back to the inactivate state will reactivate it.
+
 
 ## Using
 
-See: http://christopherthielen.github.io/ui-router-extras/#/dsr
+Sticky states works requires `ui-router-core` 2.0.0 or above.
+Run `npm ls` to check the version of `ui-router-core` included with the UI-Router distribution for your framework
 
-TODO: Move docs here
+### Add Plugin
+
+#### ng1
+
+In Angular 1, register a plugin by injecting `$uiRouterProvider` in a `config()` block.
+
+```js
+import {StickyStatesPlugin} from "ui-router-sticky-states";
+
+angular.module('myapp', ['ui.router']).config(function($uiRouterProvider) {
+  $uiRouterProvider.plugin(StickyStatesPlugin);
+});
+```
+
+#### ng2
+
+In Angular 2, register a plugin in your `UIRouterConfig` class
+
+```js
+import {StickyStatesPlugin} from "ui-router-sticky-states";
+
+export class MyConfig {
+  configure(uiRouter: UIRouter) {
+    uiRouter.plugin(StickyStatesPlugin);
+  }
+}
+```
+
+#### react
+
+In React, register a plugin after creating your `UIRouterReact` instance.
+
+```js
+import {StickyStatesPlugin} from "ui-router-sticky-states";
+
+let router = new UIRouterReact();
+router.plugin(StickyStatesPlugin);
+```
+
+Or, if using component bootstrapping, add the plugin in your routerConfig function.
+
+```js
+let routerConfig = (router) => router.plugin(StickyStatesPlugin);
+
+return <UIRouterReact config={routerConfig}/>;
+```
+
+#### More
+
+This project was ported from the [UI-Router Extras project](//christopherthielen.github.io/ui-router-extras/) for legacy UI-Router.
+For more information, see the ui-router extras documentation: http://christopherthielen.github.io/ui-router-extras/#/sticky
+
+TODO: Rewrite docs
