@@ -1,7 +1,7 @@
 {
-  "name": "ui-router-dsr",
-  "description": "UI-Router Deep State Redirect: redirect to the most recently activated child state",
-  "version": "1.1.0",
+  "name": "ui-router-sticky-states",
+  "description": "UI-Router Sticky States: Keep states and their components alive while a different state is activated",
+  "version": "1.0.0",
   "scripts": {
     "clean": "shx rm -rf lib lib-esm",
     "build": "npm run clean && tsc && tsc -m es6 -outDir lib-esm",
@@ -34,12 +34,12 @@
   "engines": {
     "node": ">=4.0.0"
   },
-  "jsnext:main": "lib-esm/index.js",
   "main": "lib/index.js",
+  "module": "lib-esm/index.js",
   "typings": "lib/index.d.ts",
   "license": "MIT",
   "peerDependencies": {
-    "ui-router-core": ">=2.0.0"
+    "ui-router-core": ">=3.0.0"
   },
   "devDependencies": {
     "@types/angular": "^1.5.20",
