@@ -1,9 +1,8 @@
-import { getTestGoFn, addCallbacks, resetTransitionLog, pathFrom, equalityTester, tlog } from "./util"
+import { getTestGoFn, addCallbacks, resetTransitionLog, pathFrom, equalityTester, tlog } from "./util";
 import {
-    UIRouter, StateService, StateRegistry, StateDeclaration, ViewService, TransitionService,
-    PathNode, _ViewDeclaration, isObject, unnestR, ViewConfigFactory, ViewConfig
+  UIRouter, StateService, StateRegistry, StateDeclaration, ViewService, TransitionService, PathNode, _ViewDeclaration,
+  isObject, ViewConfigFactory, ViewConfig, servicesPlugin, memoryLocationPlugin
 } from "ui-router-core";
-
 import "../src/stickyStates";
 import { StickyStatesPlugin } from "../src/stickyStates";
 
@@ -29,8 +28,10 @@ describe('stickyState', function () {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
 
     router = new UIRouter();
+    router.plugin(servicesPlugin);
+    router.plugin(memoryLocationPlugin);
     $stickyState = router.plugin(StickyStatesPlugin);
-    router.urlRouterProvider.otherwise('/');
+    router.urlService.rules.otherwise('/');
 
     // ui-router-core doesn't have a default views builder
     router.stateRegistry.decorator("views", function (state, parentFn) {
@@ -49,13 +50,12 @@ describe('stickyState', function () {
     const factory: ViewConfigFactory = (path: PathNode[], decl: _ViewDeclaration) => {
       return { $id: _id++, viewDecl: decl, load: () => {}, path: path } as ViewConfig;
     };
-    router.viewService.viewConfigFactory("core", factory);
+    router.viewService._pluginapi._viewConfigFactory("core", factory);
 
     $state = router.stateService;
     $transitions = router.transitionService;
     $view = router.viewService;
     $registry = router.stateRegistry;
-    router.stateRegistry.stateQueue.autoFlush($state);
 
     testGo = getTestGoFn(router);
   });
@@ -322,7 +322,7 @@ describe('stickyState', function () {
     it('should reactivate properly', async function (done) {
       await testGo('typedparam', undefined, { params: { boolparam: true } });
       await testGo('A');
-      expect(location.hash).toBe("#/typedparam/1");
+      expect(router.urlService.url()).toBe("/typedparam/1");
       resetTransitionLog();
       await testGo('typedparam', {inactivated: 'A', reactivated: 'typedparam'}, { params: { boolparam: true } });
 
@@ -334,7 +334,7 @@ describe('stickyState', function () {
       var objparam = { foo: "bar" };
       await testGo('typedparam2', undefined, { params: { jsonparam: objparam } });
       await testGo('A');
-      expect(location.hash).toBe("#/typedparam2/%7B%22foo%22%3A%22bar%22%7D");
+      expect(router.urlService.url()).toBe("/typedparam2/%7B%22foo%22%3A%22bar%22%7D");
       resetTransitionLog();
       await testGo('typedparam2', {inactivated: 'A', reactivated: 'typedparam2'}, { params: { jsonparam: { foo: "bar" } } });
 

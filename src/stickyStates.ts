@@ -1,10 +1,9 @@
-
-import { UIRouter, PathFactory, StateOrName, State, StateDeclaration, PathNode, TreeChanges } from "ui-router-core";
-import { Transition, UIRouterPluginBase, TransitionHookPhase, TransitionHookScope, TransitionServicePluginAPI } from "ui-router-core";
-import { HookMatchCriteria, TransitionStateHookFn, HookRegOptions, PathType } from "ui-router-core";
-
-import { find, tail, isString, isArray, inArray, removeFrom, pushTo, identity, anyTrueR, assertMap, uniqR, isFunction } from "ui-router-core";
-import { defaultTransOpts } from "ui-router-core";
+import {
+  UIRouter, PathFactory, StateOrName, State, StateDeclaration, PathNode, TreeChanges, Transition, UIRouterPluginBase,
+  TransitionHookPhase, TransitionHookScope, TransitionServicePluginAPI, HookMatchCriteria, TransitionStateHookFn,
+  HookRegOptions, PathType, find, tail, isString, isArray, inArray, removeFrom, pushTo, identity, anyTrueR, assertMap,
+  uniqR, defaultTransOpts
+} from "ui-router-core";
 
 declare module "ui-router-core/lib/state/interface" {
   interface StateDeclaration {
