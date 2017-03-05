@@ -1,10 +1,11 @@
 import { getTestGoFn, addCallbacks, resetTransitionLog, pathFrom, equalityTester, tlog } from "./util";
 import {
   UIRouter, StateService, StateRegistry, StateDeclaration, ViewService, TransitionService, PathNode, _ViewDeclaration,
-  isObject, ViewConfigFactory, ViewConfig, servicesPlugin, memoryLocationPlugin
+  isObject, ViewConfigFactory, ViewConfig
 } from "ui-router-core";
 import "../src/stickyStates";
 import { StickyStatesPlugin } from "../src/stickyStates";
+import { memoryLocationPlugin, servicesPlugin } from 'ui-router-core/lib/vanilla';
 
 let router: UIRouter;
 let $state: StateService;
@@ -38,12 +39,12 @@ describe('stickyState', function () {
       if (isObject(state.views)) {
         return Object.keys(state.views).map(key => (
           { $name: key, $uiViewName: key, $uiViewContextAnchor: state.name, $type: "core", $context: state }
-        ), [])
+        ), []);
       }
 
       return [
         { $name: "$default", $uiViewName: "$default", $uiViewContextAnchor: state.name, $type: "core", $context: state }
-      ]
+      ];
     });
 
     // ui-router-core doesn't have a default ViewConfigFactory
@@ -60,7 +61,7 @@ describe('stickyState', function () {
     testGo = getTestGoFn(router);
   });
 
-  var controllerInvokeCount = 0, resolveCount = 0, Xvalue = undefined;
+  let controllerInvokeCount = 0, resolveCount = 0, Xvalue = undefined;
   function resetXResolve() {
     controllerInvokeCount = resolveCount = 0; Xvalue = undefined;
   }
@@ -124,11 +125,10 @@ describe('stickyState', function () {
     });
 
     it('$stickyState.$inactives should be an array', function() {
-      expect(Array.isArray($stickyState.inactives())).toBeTruthy()
+      expect(Array.isArray($stickyState.inactives())).toBeTruthy();
     });
 
     it('$stickyState.inactives() should hold inactive State Declarations', async function(done) {
-      let root = $registry.root();
       await testGo("A._1", { entered: [ "A", "A._1" ]});
       await testGo("A._2", { inactivated: "A._1", entered: "A._2" });
 
@@ -240,8 +240,8 @@ describe('stickyState', function () {
     });
 
     it('should allow empty transitionTo options', function() {
-      expect(() => $state.transitionTo('A')).not.toThrow()
-    })
+      expect(() => $state.transitionTo('A')).not.toThrow();
+    });
   });
 
   describe('resolve/controller function', function () {
@@ -331,14 +331,14 @@ describe('stickyState', function () {
 
     // Test 2 for issue #239
     it('should reactivate properly with equivalent json', async function (done) {
-      var objparam = { foo: "bar" };
+      let objparam = { foo: "bar" };
       await testGo('typedparam2', undefined, { params: { jsonparam: objparam } });
       await testGo('A');
       expect(router.urlService.url()).toBe("/typedparam2/%7B%22foo%22%3A%22bar%22%7D");
       resetTransitionLog();
       await testGo('typedparam2', {inactivated: 'A', reactivated: 'typedparam2'}, { params: { jsonparam: { foo: "bar" } } });
 
-      done()
+      done();
     });
   });
 
@@ -359,7 +359,7 @@ describe('stickyState', function () {
     it("should reload when params change", async function(done) {
       await testGo('main', { entered: 'main' });
 
-      var options = { params: { 'product_id': 12345 } };
+      let options = { params: { 'product_id': 12345 } };
       await testGo('main.product.something', { entered: pathFrom('main.product', 'main.product.something') }, options);
       await testGo('main.other', { entered: 'main.other', inactivated: [ 'main.product', 'main.product.something' ] });
       await testGo('main.product.something', { reactivated: ['main.product', 'main.product.something'], inactivated: 'main.other' }, options);
@@ -430,7 +430,7 @@ describe('stickyState', function () {
         await testGo('A._1.__1.B', { exited: 'A._1.__1.B.___1' });
 
         done();
-      })
+      });
     });
 
     describe("directly to a parent of an inactive sticky state", function() {
@@ -441,8 +441,8 @@ describe('stickyState', function () {
         await testGo('A._1.__1.B', { exited: 'A._1.__1.B.___1', inactivated: 'A._2', reactivated: ['A._1', 'A._1.__1', 'A._1.__1.B'] });
 
         done();
-      })
-    })
+      });
+    });
   });
 
   describe('nested .go() transitions with parent attributes', function () {
@@ -473,11 +473,11 @@ describe('stickyState', function () {
     }
 
     it('should have states attributes correctly set', function() {
-      var A = $state.get('A');
-      var A_1 = $state.get('A._1');
-      var A_1__1 = $state.get('A._1.__1');
-      var A_2 = $state.get('_2');
-      var A_2__2 = $state.get('__2');
+      let A = $state.get('A');
+      let A_1 = $state.get('A._1');
+      let A_1__1 = $state.get('A._1.__1');
+      let A_2 = $state.get('_2');
+      let A_2__2 = $state.get('__2');
 
       // Check includes
       expect(A.$$state().includes).toEqual({'' : true, 'A': true});
@@ -535,14 +535,14 @@ describe('stickyState', function () {
   });
 
   describe('ui-router option reload: [state ref]', function() {
-    var bStates: StateDeclaration[] = [
+    let bStates: StateDeclaration[] = [
       { name: 'B', sticky: true },
       { name: 'B._1', sticky: true },
       { name: 'B._1.__1', sticky: true }
     ];
 
     beforeEach(function() {
-      var simpleStates = getSimpleStates();
+      let simpleStates = getSimpleStates();
       ssReset(bStates.concat(simpleStates));
     });
 
@@ -608,14 +608,14 @@ describe('stickyState', function () {
       expect(() => $stickyState.exitSticky("A.DOESNTEXIST"))
           .toThrow(Error("State not found: A.DOESNTEXIST"));
       expect($stickyState.inactives().length).toBe(1);
-      expect($stickyState.inactives()[0].name).toBe('A._1')
+      expect($stickyState.inactives()[0].name).toBe('A._1');
     });
 
     it("should throw if an non-inactive state is passed", () => {
       expect(() => $stickyState.exitSticky("A._2"))
           .toThrow(Error("State not inactive: A._2"));
       expect($stickyState.inactives().length).toBe(1);
-      expect($stickyState.inactives()[0].name).toBe('A._1')
+      expect($stickyState.inactives()[0].name).toBe('A._1');
     });
 
     it("should reset all inactive states if passed no arguments", async (done) => {

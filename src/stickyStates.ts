@@ -115,7 +115,7 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
     this._addDefaultTransitionOption();
   }
 
-  inactives(): StateDeclaration {
+  inactives(): StateDeclaration[] {
     return this._inactives.map(node => node.state.self);
   }
 
