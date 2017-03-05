@@ -1,5 +1,5 @@
 import {
-  UIRouter, PathFactory, StateOrName, State, StateDeclaration, PathNode, TreeChanges, Transition, UIRouterPluginBase,
+  UIRouter, PathFactory, StateOrName, StateObject, StateDeclaration, PathNode, TreeChanges, Transition, UIRouterPluginBase,
   TransitionHookPhase, TransitionHookScope, TransitionServicePluginAPI, HookMatchCriteria, TransitionStateHookFn,
   HookRegOptions, PathType, find, tail, isString, isArray, inArray, removeFrom, pushTo, identity, anyTrueR, assertMap,
   uniqR, defaultTransOpts, HookMatchCriterion
@@ -14,7 +14,7 @@ declare module "ui-router-core/lib/state/interface" {
 }
 
 declare module "ui-router-core/lib/state/stateObject" {
-  interface State {
+  interface StateObject {
     sticky?: boolean;
     onInactivate?: TransitionStateHookFn;
     onReactivate?: TransitionStateHookFn;
@@ -67,7 +67,7 @@ const isChildOfAny = (_parents: PathNode[]) => {
       _parents.map(parent => isChildOf(parent)(node)).reduce(anyTrueR, false);
 };
 
-const ancestorPath = (state: State) =>
+const ancestorPath = (state: StateObject) =>
     state.parent ? ancestorPath(state.parent).concat(state) : [state];
 
 const isDescendantOf = (_ancestor: PathNode) => {
@@ -81,7 +81,7 @@ const isDescendantOfAny = (ancestors: PathNode[]) =>
         ancestors.map(ancestor => isDescendantOf(ancestor)(node))
             .reduce(anyTrueR, false);
 
-function findStickyAncestor(state: State) {
+function findStickyAncestor(state: StateObject) {
   return state.sticky ? state : findStickyAncestor(state.parent);
 }
 
@@ -133,18 +133,18 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
 
   private _defineStickyEvents() {
     let paths = this.pluginAPI._getPathTypes();
-    this.pluginAPI._defineEvent("onInactivate", TransitionHookPhase.ASYNC, 5, paths.inactivating, true);
-    this.pluginAPI._defineEvent("onReactivate", TransitionHookPhase.ASYNC, 35, paths.reactivating);
+    this.pluginAPI._defineEvent("onInactivate", TransitionHookPhase.RUN, 5, paths.inactivating, true);
+    this.pluginAPI._defineEvent("onReactivate", TransitionHookPhase.RUN, 35, paths.reactivating);
   }
 
   // Process state.onInactivate or state.onReactivate callbacks
   private _addStateCallbacks() {
     let inactivateCriteria = { inactivating: state => !!state.onInactivate };
-    this.router.transitionService.onInactivate(inactivateCriteria, (trans: Transition, state: State) =>
+    this.router.transitionService.onInactivate(inactivateCriteria, (trans: Transition, state: StateDeclaration) =>
         state.onInactivate(trans, state));
 
     let reactivateCriteria = { reactivating: state => !!state.onReactivate };
-    this.router.transitionService.onReactivate(reactivateCriteria, (trans: Transition, state: State) =>
+    this.router.transitionService.onReactivate(reactivateCriteria, (trans: Transition, state: StateDeclaration) =>
         state.onReactivate(trans, state));
   }
 
@@ -156,7 +156,7 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
 
     let $state = trans.router.stateService;
 
-    let states: State[] = (exitSticky as any[])
+    let states: StateObject[] = (exitSticky as any[])
         .map(assertMap((stateOrName) => $state.get(stateOrName), (state) => "State not found: " + state))
         .map(state => state.$$state());
 
