@@ -2,7 +2,7 @@ import {
   UIRouter, PathFactory, StateOrName, State, StateDeclaration, PathNode, TreeChanges, Transition, UIRouterPluginBase,
   TransitionHookPhase, TransitionHookScope, TransitionServicePluginAPI, HookMatchCriteria, TransitionStateHookFn,
   HookRegOptions, PathType, find, tail, isString, isArray, inArray, removeFrom, pushTo, identity, anyTrueR, assertMap,
-  uniqR, defaultTransOpts
+  uniqR, defaultTransOpts, HookMatchCriterion
 } from "ui-router-core";
 
 declare module "ui-router-core/lib/state/interface" {
@@ -56,6 +56,48 @@ declare module "ui-router-core/lib/transition/interface" {
   }
 }
 
+const notInArray = (arr: any[]) => (item) => !inArray(arr, item);
+
+const isChildOf = (parent: PathNode) =>
+    (node: PathNode) =>
+    node.state.parent === parent.state;
+
+const isChildOfAny = (_parents: PathNode[]) => {
+  return (node: PathNode) =>
+      _parents.map(parent => isChildOf(parent)(node)).reduce(anyTrueR, false);
+};
+
+const ancestorPath = (state: State) =>
+    state.parent ? ancestorPath(state.parent).concat(state) : [state];
+
+const isDescendantOf = (_ancestor: PathNode) => {
+  let ancestor = _ancestor.state;
+  return (node: PathNode) =>
+  ancestorPath(node.state).indexOf(ancestor) !== -1;
+};
+
+const isDescendantOfAny = (ancestors: PathNode[]) =>
+    (node: PathNode) =>
+        ancestors.map(ancestor => isDescendantOf(ancestor)(node))
+            .reduce(anyTrueR, false);
+
+function findStickyAncestor(state: State) {
+  return state.sticky ? state : findStickyAncestor(state.parent);
+}
+
+
+
+/**
+ * Sorts fn that sorts by:
+ * 1) node depth (how deep a state is nested)
+ * 2) the order in which the state was inactivated (later in wins)
+ */
+function nodeDepthThenInactivateOrder(inactives: PathNode[]) {
+  return function(l: PathNode, r: PathNode): number {
+    let depthDelta = (l.state.path.length - r.state.path.length);
+    return depthDelta !== 0 ? depthDelta : inactives.indexOf(r) - inactives.indexOf(l);
+  };
+}
 export class StickyStatesPlugin extends UIRouterPluginBase {
   name = "stickystates";
   private _inactives: PathNode[] = [];
@@ -73,18 +115,18 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
     this._addDefaultTransitionOption();
   }
 
-  inactives() {
+  inactives(): StateDeclaration {
     return this._inactives.map(node => node.state.self);
   }
 
   private _addCreateHook() {
     this.router.transitionService.onCreate({}, (trans) => {
-      trans['_treeChanges'] = this._calculateStickyTreeChanges(trans)
+      trans['_treeChanges'] = this._calculateStickyTreeChanges(trans);
     });
   }
 
   private _defineStickyPaths() {
-    let paths = this.pluginAPI._getPathTypes();
+    // let paths = this.pluginAPI._getPathTypes();
     this.pluginAPI._definePathType("inactivating", TransitionHookScope.STATE);
     this.pluginAPI._definePathType("reactivating", TransitionHookScope.STATE);
   }
@@ -97,11 +139,11 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
 
   // Process state.onInactivate or state.onReactivate callbacks
   private _addStateCallbacks() {
-    var inactivateCriteria = { inactivating: state => !!state.onInactivate };
+    let inactivateCriteria = { inactivating: state => !!state.onInactivate };
     this.router.transitionService.onInactivate(inactivateCriteria, (trans: Transition, state: State) =>
         state.onInactivate(trans, state));
 
-    var reactivateCriteria = { reactivating: state => !!state.onReactivate };
+    let reactivateCriteria = { reactivating: state => !!state.onReactivate };
     this.router.transitionService.onReactivate(reactivateCriteria, (trans: Transition, state: State) =>
         state.onReactivate(trans, state));
   }
@@ -218,7 +260,7 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
 
 
   private _addDefaultTransitionOption() {
-    defaultTransOpts.exitSticky = []
+    defaultTransOpts.exitSticky = [];
   }
 
   /**
@@ -262,43 +304,4 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
     node && find(this._inactives, n => n.state === node.state);
 }
 
-const notInArray = (arr: any[]) => (item) => !inArray(arr, item);
 
-const isChildOf = (parent: PathNode) =>
-    (node: PathNode) =>
-    node.state.parent === parent.state;
-
-const isChildOfAny = (_parents: PathNode[]) => {
-    return (node: PathNode) =>
-        _parents.map(parent => isChildOf(parent)(node)).reduce(anyTrueR, false);
-};
-
-const ancestorPath = (state: State) =>
-    state.parent ? ancestorPath(state.parent).concat(state) : [state];
-
-const isDescendantOf = (_ancestor: PathNode) => {
-    let ancestor = _ancestor.state;
-    return (node: PathNode) =>
-        ancestorPath(node.state).indexOf(ancestor) !== -1;
-};
-
-const isDescendantOfAny = (ancestors: PathNode[]) =>
-    (node: PathNode) =>
-        ancestors.map(ancestor => isDescendantOf(ancestor)(node))
-            .reduce(anyTrueR, false);
-
-function findStickyAncestor(state: State) {
-  return state.sticky ? state : findStickyAncestor(state.parent);
-}
-
-/**
- * Sorts fn that sorts by:
- * 1) node depth (how deep a state is nested)
- * 2) the order in which the state was inactivated (later in wins)
- */
-function nodeDepthThenInactivateOrder(inactives: PathNode[]) {
-  return function(l: PathNode, r: PathNode): number {
-    let depthDelta = (l.state.path.length - r.state.path.length);
-    return depthDelta !== 0 ? depthDelta : inactives.indexOf(r) - inactives.indexOf(l);
-  }
-}

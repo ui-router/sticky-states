@@ -11,5 +11,5 @@
     "declaration": true,
     "sourceMap": true
   },
-  "files": ["src/stickyStates.ts"]
+  "files": ["src/index.ts"]
 }
