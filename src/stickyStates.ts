@@ -122,7 +122,7 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
   private _addCreateHook() {
     this.router.transitionService.onCreate({}, (trans) => {
       trans['_treeChanges'] = this._calculateStickyTreeChanges(trans);
-    });
+    }, { priority: 100 });
   }
 
   private _defineStickyPaths() {
