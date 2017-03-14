@@ -1,7 +1,7 @@
 import { getTestGoFn, addCallbacks, resetTransitionLog, pathFrom, equalityTester, tlog } from "./util";
 import {
   UIRouter, StateService, StateRegistry, StateDeclaration, ViewService, TransitionService, PathNode, _ViewDeclaration,
-  isObject, ViewConfigFactory, ViewConfig, Rejection
+  isObject, ViewConfigFactory, ViewConfig
 } from "ui-router-core";
 import "../src/stickyStates";
 import { StickyStatesPlugin } from "../src/stickyStates";
@@ -617,7 +617,7 @@ describe('stickyState', function () {
     it("should throw if an non-inactive state is passed", () => {
       let caught = null;
       try {
-        $stickyState.exitSticky("A._2")
+        $stickyState.exitSticky("A._2");
       } catch (error) { caught = error; }
       expect(caught).toEqual(Error("State not inactive: A._2"));
       expect($stickyState.inactives().length).toBe(1);
@@ -666,7 +666,7 @@ describe('stickyState', function () {
       try {
         $state.go("A._1", {}, { exitSticky: 'A._1' });
       } catch (error) { caught = error; }
-      expect(caught).toEqual(Error("Can not exit a sticky state that is currently active/activating: A._1"))
+      expect(caught).toEqual(Error("Can not exit a sticky state that is currently active/activating: A._1"));
       expect($stickyState.inactives().length).toBe(1);
       expect($stickyState.inactives()[0].name).toBe('A._1');
     });
