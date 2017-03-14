@@ -653,7 +653,7 @@ describe('stickyState', function () {
       done();
     });
 
-    fit("should exit the currently active sticky via `exitSticky` option after transitioning elsewhere", async (done) => {
+    it("should exit the currently active sticky via `exitSticky` option after transitioning elsewhere", async (done) => {
       await $state.go("A._1");
       expect($stickyState.inactives().length).toBe(1);
 
