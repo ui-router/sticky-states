@@ -653,6 +653,16 @@ describe('stickyState', function () {
       done();
     });
 
+    fit("should exit the currently active sticky via `exitSticky` option after transitioning elsewhere", async (done) => {
+      await $state.go("A._1");
+      expect($stickyState.inactives().length).toBe(1);
+
+      await $state.go("A._2", {}, { exitSticky: 'A._1' });
+      expect($stickyState.inactives().length).toBe(0);
+
+      done();
+    });
+
     it("should reset an inactive state via `exitSticky` option, while activating a different state", async (done) => {
       await $state.go("A._3", {}, { exitSticky: 'A._1' });
       expect($stickyState.inactives().length).toBe(1);

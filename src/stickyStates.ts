@@ -160,10 +160,15 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
         .map(assertMap((stateOrName) => $state.get(stateOrName), (state) => "State not found: " + state))
         .map(state => state.$$state());
 
-    let exitingInactives = states.map(assertMap(state => this._inactives.find(node => node.state === state), (state) => "State not inactive: " + state));
-    let exiting = this._inactives.filter(isDescendantOfAny(exitingInactives));
+    let potentialExitingStickies = this._inactives.concat(tc.inactivating).reduce(uniqR, []) as PathNode[];
 
-    exiting.map(assertMap(node => !inArray(tc.to, node), (node) => "Can not exit a sticky state that is currently active/activating: " + node.state.name));
+    let findInactive = state => potentialExitingStickies.find(node => node.state === state);
+    const notInactiveMsg = (state) => "State not inactive: " + state;
+    let exitingInactives = states.map(assertMap(findInactive, notInactiveMsg));
+    let exiting = potentialExitingStickies.filter(isDescendantOfAny(exitingInactives));
+
+    let inToPathMsg = (node) => "Can not exit a sticky state that is currently active/activating: " + node.state.name;
+    exiting.map(assertMap(node => !inArray(tc.to, node), inToPathMsg));
 
     return exiting;
   }
@@ -252,8 +257,12 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
     // Object.keys(tcCopy).forEach(key => tcCopy[key] = tcCopy[key].map(x => x.state.name));
     // console.table(tcCopy);
 
+    // Process the inactive sticky states that should be exited
     let exitSticky = this._calculateExitSticky(tc, trans);
     exitSticky.filter(notInArray(tc.exiting)).forEach(pushTo(tc.exiting));
+
+    // Also process the active sticky states that are about to be inactivated, but should be exited
+    exitSticky.filter(inArray(tc.inactivating)).forEach(removeFrom(tc.inactivating));
 
     return tc;
   }
