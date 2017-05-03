@@ -1,11 +1,11 @@
 import {
-  UIRouter, PathFactory, StateOrName, StateObject, StateDeclaration, PathNode, TreeChanges, Transition, UIRouterPluginBase,
+  UIRouter, PathUtils, StateOrName, StateObject, StateDeclaration, PathNode, TreeChanges, Transition, UIRouterPluginBase,
   TransitionHookPhase, TransitionHookScope, TransitionServicePluginAPI, HookMatchCriteria, TransitionStateHookFn,
   HookRegOptions, PathType, find, tail, isString, isArray, inArray, removeFrom, pushTo, identity, anyTrueR, assertMap,
   uniqR, defaultTransOpts, HookMatchCriterion
-} from "ui-router-core";
+} from "@uirouter/core";
 
-declare module "ui-router-core/lib/state/interface" {
+declare module "@uirouter/core/lib/state/interface" {
   interface StateDeclaration {
     sticky?: boolean;
     onInactivate?: TransitionStateHookFn;
@@ -13,7 +13,7 @@ declare module "ui-router-core/lib/state/interface" {
   }
 }
 
-declare module "ui-router-core/lib/state/stateObject" {
+declare module "@uirouter/core/lib/state/stateObject" {
   interface StateObject {
     sticky?: boolean;
     onInactivate?: TransitionStateHookFn;
@@ -21,14 +21,14 @@ declare module "ui-router-core/lib/state/stateObject" {
   }
 }
 
-declare module "ui-router-core/lib/transition/transitionService" {
+declare module "@uirouter/core/lib/transition/transitionService" {
   interface TransitionService {
     onInactivate: (criteria: HookMatchCriteria, callback: TransitionStateHookFn, options?: HookRegOptions) => Function;
     onReactivate: (criteria: HookMatchCriteria, callback: TransitionStateHookFn, options?: HookRegOptions) => Function;
   }
 }
 
-declare module "ui-router-core/lib/transition/interface" {
+declare module "@uirouter/core/lib/transition/interface" {
   interface TransitionOptions {
     exitSticky: StateOrName[]|StateOrName;
   }
@@ -99,7 +99,7 @@ function nodeDepthThenInactivateOrder(inactives: PathNode[]) {
   };
 }
 export class StickyStatesPlugin extends UIRouterPluginBase {
-  name = "stickystates";
+  name = "sticky-states";
   private _inactives: PathNode[] = [];
   private pluginAPI: TransitionServicePluginAPI;
 
@@ -194,7 +194,7 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
     // Simulate a transition where the fromPath is a clone of the toPath, but use the inactivated nodes
     // This will calculate which inactive nodes that need to be exited/entered due to param changes
     let inactiveFromPath = tc.retained.concat(tc.entering.map(node => this._getInactive(node) || null)).filter(identity);
-    let simulatedTC = PathFactory.treeChanges(inactiveFromPath, tc.to, trans.options().reloadState);
+    let simulatedTC = PathUtils.treeChanges(inactiveFromPath, tc.to, trans.options().reloadState);
 
     let shouldRewritePaths = ['retained', 'entering', 'exiting'].some(path => !!simulatedTC[path].length);
 

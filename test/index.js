@@ -2,7 +2,7 @@
 // current directory and all subdirectories
 
 require('core-js');
-require('ui-router-core');
+require('@uirouter/core');
 require('../src/stickyStates');
 
 var testsContext = require.context(".", true, /Spec$/);
