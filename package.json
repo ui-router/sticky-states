@@ -3,7 +3,7 @@
   "description": "UI-Router Sticky States: Keep states and their components alive while a different state is activated",
   "version": "1.3.0",
   "scripts": {
-    "clean": "shx rm -rf lib lib-esm",
+    "clean": "shx rm -rf lib lib-esm bundles",
     "build": "npm run clean && tsc && tsc -m es6 -outDir lib-esm && npm run bundle",
     "bundle": "rollup -c",
     "test": "karma start",
