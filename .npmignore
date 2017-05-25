@@ -1,0 +1,18 @@
+# Any hidden files
+**/.*
+.*
+*.iml
+*.ipr
+*.iws
+
+src
+test
+scripts
+
+node_modules
+
+tslint.json
+tsconfig.json
+tsconfig.**.json
+webpack.config.js
+rollup.config.js
