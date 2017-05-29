@@ -32,7 +32,7 @@ var extension = MINIFY ? ".min.js" : ".js";
 const CONFIG = {
   moduleName: pkg.name,
   entry: 'lib-esm/stickyStates.js',
-  dest: 'bundles/ui-router-sticky-states' + extension,
+  dest: '_bundles/ui-router-sticky-states' + extension,
   external: '@uirouter/core',
   globals: { '@uirouter/core': '@uirouter/core' },
   
