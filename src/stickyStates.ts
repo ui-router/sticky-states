@@ -198,6 +198,12 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
 
     let shouldRewritePaths = ['retained', 'entering', 'exiting'].some(path => !!simulatedTC[path].length);
 
+    let applyToParams = (retainedNode, toPath, idx) => {
+      let cloned = PathNode.clone(retainedNode);
+      cloned.paramValues = toPath[idx].paramValues;
+      return cloned;
+    }
+
     if (shouldRewritePaths) {
       // The 'retained' nodes from the simulated transition's TreeChanges are the ones that will be reactivated.
       // (excluding the nodes that are in the original retained path)
@@ -213,7 +219,8 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
       tc.exiting = tc.exiting.concat(simulatedTC.exiting);
 
       // Rewrite the to path
-      tc.to = tc.retained.concat(tc.reactivating).concat(tc.entering);
+      let retainedWithToParams = tc.retained.map((retainedNode,idx) => applyToParams(retainedNode,tc.to,idx));
+      tc.to = retainedWithToParams.concat(tc.reactivating).concat(tc.entering);
     }
 
     /****************
