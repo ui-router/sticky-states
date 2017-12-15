@@ -30,7 +30,7 @@ declare module "@uirouter/core/lib/transition/transitionService" {
 
 declare module "@uirouter/core/lib/transition/interface" {
   interface TransitionOptions {
-    exitSticky: StateOrName[]|StateOrName;
+    exitSticky?: StateOrName[]|StateOrName;
   }
 
   interface TreeChanges {
