@@ -1,6 +1,5 @@
 import nodeResolve from 'rollup-plugin-node-resolve';
 import uglify from 'rollup-plugin-uglify';
-import progress from 'rollup-plugin-progress';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 
 var MINIFY = process.env.MINIFY;
@@ -21,7 +20,6 @@ comment.type === 'comment2' && /@license/i.test(comment.value);
 
 var plugins = [
   nodeResolve({jsnext: true}),
-  progress(),
   sourcemaps(),
 ];
 
