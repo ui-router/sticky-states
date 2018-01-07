@@ -70,6 +70,6 @@
     "tslint-eslint-rules": "^4.1.1",
     "typescript": "^2.1.1",
     "webpack": "3",
-    "webpack-beep-plugin": "0.0.1"
+    "webpack-beep-plugin": "1.0.0"
   }
 }
