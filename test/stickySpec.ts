@@ -446,7 +446,7 @@ describe('stickyState', function () {
   });
 
   describe('nested .go() transitions with parent attributes', function () {
-    function getStatesWithParentAttribute() {
+    beforeEach(function() {
       /*
                aside
              /    (sticky)
@@ -455,8 +455,7 @@ describe('stickyState', function () {
                  -- _2 -- __2
                  (sticky)
        */
-
-      return [
+      const states = [
         { name: 'aside' },
         { name: 'A', views: { 'A@': {} } },
 
@@ -466,10 +465,8 @@ describe('stickyState', function () {
         { name: 'A._1.__1' },
         { name: '__2', parent: '_2' },
       ];
-    }
 
-    beforeEach(function() {
-      ssReset(getStatesWithParentAttribute());
+      ssReset(states);
     });
 
     it('should have states attributes correctly set', function() {
