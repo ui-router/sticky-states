@@ -1,10 +1,10 @@
-import { getTestGoFn, addCallbacks, resetTransitionLog, pathFrom, equalityTester, tlog } from "./util";
+import { getTestGoFn, addCallbacks, resetTransitionLog, pathFrom, equalityTester, tlog } from './util';
 import {
   UIRouter, StateService, StateRegistry, StateDeclaration, ViewService, TransitionService, PathNode, _ViewDeclaration,
-  isObject, ViewConfigFactory, ViewConfig
-} from "@uirouter/core";
-import "../src/stickyStates";
-import { StickyStatesPlugin } from "../src/stickyStates";
+  isObject, ViewConfigFactory, ViewConfig,
+} from '@uirouter/core';
+import '../src/stickyStates';
+import { StickyStatesPlugin } from '../src/stickyStates';
 import { memoryLocationPlugin, servicesPlugin } from '@uirouter/core/lib/vanilla';
 
 let router: UIRouter;
@@ -35,15 +35,15 @@ describe('stickyState', function () {
     router.urlService.rules.otherwise('/');
 
     // ui-router-core doesn't have a default views builder
-    router.stateRegistry.decorator("views", function (state, parentFn) {
+    router.stateRegistry.decorator('views', function (state, parentFn) {
       if (isObject(state.views)) {
         return Object.keys(state.views).map(key => (
-          { $name: key, $uiViewName: key, $uiViewContextAnchor: state.name, $type: "core", $context: state }
+          { $name: key, $uiViewName: key, $uiViewContextAnchor: state.name, $type: 'core', $context: state }
         ), []);
       }
 
       return [
-        { $name: "$default", $uiViewName: "$default", $uiViewContextAnchor: state.name, $type: "core", $context: state }
+        { $name: '$default', $uiViewName: '$default', $uiViewContextAnchor: state.name, $type: 'core', $context: state },
       ];
     });
 
@@ -51,7 +51,7 @@ describe('stickyState', function () {
     const factory: ViewConfigFactory = (path: PathNode[], decl: _ViewDeclaration) => {
       return { $id: _id++, viewDecl: decl, load: () => {}, path: path } as ViewConfig;
     };
-    router.viewService._pluginapi._viewConfigFactory("core", factory);
+    router.viewService._pluginapi._viewConfigFactory('core', factory);
 
     $state = router.stateService;
     $transitions = router.transitionService;
@@ -69,40 +69,40 @@ describe('stickyState', function () {
   // Set up base state heirarchy
   function getSimpleStates(): StateDeclaration[] {
     return [
-      { name: 'main', },
+      { name: 'main' },
       { name: 'A' },
       { name: 'A._1', sticky: true, views: { '_1@A': {} } },
       { name: 'A._2', sticky: true, views: { '_2@A': {} } },
-      { name: 'A._2.__1',  },
+      { name: 'A._2.__1'  },
       { name: 'A._3',
         sticky: true,
         views: { '_3@A': { } },
-        resolve: { X: function () { return Promise.resolve(++resolveCount); }}
-      }
+        resolve: { X: function () { return Promise.resolve(++resolveCount); } },
+      },
     ];
   }
 
   function getNestedStickyStates() {
     return [
-      { name: 'aside', },
-      { name: 'A', sticky: true, deepStateRedirect: true, views: { 'A@': {} }},
+      { name: 'aside' },
+      { name: 'A', sticky: true, deepStateRedirect: true, views: { 'A@': {} } },
 
-      { name: 'A._1', sticky: true, deepStateRedirect: true, views: { '_1@A': {} }},
-      { name: 'A._2', sticky: true, deepStateRedirect: true, views: { '_2@A': {} }},
-      { name: 'A._3', sticky: true, views: { '_3@A': {} }},
+      { name: 'A._1', sticky: true, deepStateRedirect: true, views: { '_1@A': {} } },
+      { name: 'A._2', sticky: true, deepStateRedirect: true, views: { '_2@A': {} } },
+      { name: 'A._3', sticky: true, views: { '_3@A': {} } },
 
-      { name: 'A._1.__1', },
-      { name: 'A._1.__2', },
-      { name: 'A._1.__3', sticky: true},
-      { name: 'A._2.__1', },
-      { name: 'A._2.__2', },
+      { name: 'A._1.__1' },
+      { name: 'A._1.__2' },
+      { name: 'A._1.__3', sticky: true },
+      { name: 'A._2.__1' },
+      { name: 'A._2.__2' },
       { name: 'A._3.__1',  views: { '__1@A._3': {} } },
       { name: 'A._3.__2',  views: { '__2@A._3': {} } },
 
-      { name: 'A._1.__1.B', },
-      { name: 'A._1.__1.B.___1', sticky: true, views: { '___1@A._1.__1.B': {} }},
-      { name: 'A._1.__1.B.___2', sticky: true, views: { '___2@A._1.__1.B': {} }},
-      { name: 'A._1.__1.B.___3', sticky: true, views: { '___3@A._1.__1.B': {} }},
+      { name: 'A._1.__1.B' },
+      { name: 'A._1.__1.B.___1', sticky: true, views: { '___1@A._1.__1.B': {} } },
+      { name: 'A._1.__1.B.___2', sticky: true, views: { '___2@A._1.__1.B': {} } },
+      { name: 'A._1.__1.B.___3', sticky: true, views: { '___3@A._1.__1.B': {} } },
 
       { name: 'typedparam',  sticky: true, url: '/typedparam/{boolparam:bool}' },
       { name: 'typedparam2',  sticky: true, url: '/typedparam2/{jsonparam:json}' },
@@ -119,8 +119,8 @@ describe('stickyState', function () {
     });
 
     it('parent state of "main" should be called ""', function() {
-      let root = $state.get("main").$$state().parent;
-      expect(root.name).toBe("");
+      const root = $state.get('main').$$state().parent;
+      expect(root.name).toBe('');
       expect(root).toBe($registry.root());
     });
 
@@ -129,8 +129,8 @@ describe('stickyState', function () {
     });
 
     it('$stickyState.inactives() should hold inactive State Declarations', async function(done) {
-      await testGo("A._1", { entered: [ "A", "A._1" ]});
-      await testGo("A._2", { inactivated: "A._1", entered: "A._2" });
+      await testGo('A._1', { entered: [ 'A', 'A._1' ] });
+      await testGo('A._2', { inactivated: 'A._1', entered: 'A._2' });
 
       expect($stickyState.inactives().length).toBe(1);
       expect(typeof $stickyState.inactives()[0].$$state).toBe('function');
@@ -160,81 +160,81 @@ describe('stickyState', function () {
     });
 
     it('should inactivate sticky state A._1 when transitioning to sibling-to-sticky A._2', async function (done) {
-      await testGo('A', {entered: ['A']});
-      await testGo('A._1', {entered: ['A._1']});
-      await testGo('A._2', {entered: 'A._2', inactivated: ['A._1']});
+      await testGo('A', { entered: ['A'] });
+      await testGo('A._1', { entered: ['A._1'] });
+      await testGo('A._2', { entered: 'A._2', inactivated: ['A._1'] });
 
       done();
     });
 
     it('should inactivate sticky state A._1 when transitioning to child-of-sibling-to-sticky A._2.__1', async function (done) {
-      await testGo('A', {entered: ['A']});
-      await testGo('A._1', {entered: ['A._1']});
-      await testGo('A._2.__1', {entered: ['A._2', 'A._2.__1'], inactivated: ['A._1']});
+      await testGo('A', { entered: ['A'] });
+      await testGo('A._1', { entered: ['A._1'] });
+      await testGo('A._2.__1', { entered: ['A._2', 'A._2.__1'], inactivated: ['A._1'] });
 
       done();
     });
 
     it('should reactivate sticky state A._1 when transitioning back from sibling-to-sticky A._2', async function (done) {
-      await testGo('A', {entered: ['A']});
-      await testGo('A._1', {entered: ['A._1']});
-      await testGo('A._2', {inactivated: ['A._1'], entered: 'A._2'});
-      await testGo('A._1', {inactivated: ['A._2'], reactivated: 'A._1'});
+      await testGo('A', { entered: ['A'] });
+      await testGo('A._1', { entered: ['A._1'] });
+      await testGo('A._2', { inactivated: ['A._1'], entered: 'A._2' });
+      await testGo('A._1', { inactivated: ['A._2'], reactivated: 'A._1' });
 
       done();
     });
 
     it('should inactivate and reactivate A._1 and A._2 when transitioning back and forth', async function (done) {
-      await testGo('A', {entered: ['A']});
-      await testGo('A._1', {entered: ['A._1']});
-      await testGo('A._2', {inactivated: ['A._1'], entered: ['A._2']});
-      await testGo('A._1', {inactivated: ['A._2'], reactivated: ['A._1']});
-      await testGo('A._2', {inactivated: ['A._1'], reactivated: ['A._2']});
+      await testGo('A', { entered: ['A'] });
+      await testGo('A._1', { entered: ['A._1'] });
+      await testGo('A._2', { inactivated: ['A._1'], entered: ['A._2'] });
+      await testGo('A._1', { inactivated: ['A._2'], reactivated: ['A._1'] });
+      await testGo('A._2', { inactivated: ['A._1'], reactivated: ['A._2'] });
 
       done();
     });
 
     it('should inactivate and reactivate A._1 and A._2 and A._3 when transitioning back and forth', async function (done) {
-      await testGo('A', {entered: ['A']});
-      await testGo('A._1', {entered: ['A._1']});
-      await testGo('A._2', {inactivated: ['A._1'], entered: ['A._2']});
-      await testGo('A._3', {inactivated: ['A._2'], entered: ['A._3']});
-      await testGo('A._1', {inactivated: ['A._3'], reactivated: ['A._1']});
-      await testGo('A._2', {inactivated: ['A._1'], reactivated: ['A._2']});
-      await testGo('A._3', {inactivated: ['A._2'], reactivated: ['A._3']});
+      await testGo('A', { entered: ['A'] });
+      await testGo('A._1', { entered: ['A._1'] });
+      await testGo('A._2', { inactivated: ['A._1'], entered: ['A._2'] });
+      await testGo('A._3', { inactivated: ['A._2'], entered: ['A._3'] });
+      await testGo('A._1', { inactivated: ['A._3'], reactivated: ['A._1'] });
+      await testGo('A._2', { inactivated: ['A._1'], reactivated: ['A._2'] });
+      await testGo('A._3', { inactivated: ['A._2'], reactivated: ['A._3'] });
 
       done();
     });
 
     it('should exit sticky state A._1 when transitioning up to parent A', async function (done) {
-      await testGo('A', {entered: ['A']});
-      await testGo('A._1', {entered: ['A._1']});
-      await testGo('A', {exited: ['A._1']});
+      await testGo('A', { entered: ['A'] });
+      await testGo('A._1', { entered: ['A._1'] });
+      await testGo('A', { exited: ['A._1'] });
 
       done();
     });
 
     it('should exit children A._1 and A._2 and A._3 when transitioning up to parent A', async function (done) {
-      await testGo('A', {entered: ['A']});
-      await testGo('A._1', {entered: ['A._1']});
-      await testGo('A._2', {inactivated: ['A._1'], entered: ['A._2']});
-      await testGo('A._3', {inactivated: ['A._2'], entered: ['A._3']});
+      await testGo('A', { entered: ['A'] });
+      await testGo('A._1', { entered: ['A._1'] });
+      await testGo('A._2', { inactivated: ['A._1'], entered: ['A._2'] });
+      await testGo('A._3', { inactivated: ['A._2'], entered: ['A._3'] });
 
       // orphans exited first in reverse order of when they were inactivated; from state exited last
-      await testGo('A', {exited: ['A._3', 'A._1', 'A._2']});
+      await testGo('A', { exited: ['A._3', 'A._1', 'A._2'] });
 
       done();
     });
 
     it('should exit children A._1 and A._2 and A._3 when transitioning back from sibling to parent A', async function (done) {
-      await testGo('A', {entered: ['A']});
-      await testGo('A._1', {entered: ['A._1']});
-      await testGo('A._2', {inactivated: ['A._1'], entered: ['A._2']});
-      await testGo('A._3', {inactivated: ['A._2'], entered: ['A._3']});
+      await testGo('A', { entered: ['A'] });
+      await testGo('A._1', { entered: ['A._1'] });
+      await testGo('A._2', { inactivated: ['A._1'], entered: ['A._2'] });
+      await testGo('A._3', { inactivated: ['A._2'], entered: ['A._3'] });
 
       // orphans exited first in reverse order of when they were inactivated; from state exited last
-      await testGo('A', {exited: ['A._3', 'A._1', 'A._2']});
-      await testGo('main', { entered: ['main'], exited: ['A']});
+      await testGo('A', { exited: ['A._3', 'A._1', 'A._2'] });
+      await testGo('main', { entered: ['main'], exited: ['A'] });
 
       done();
     });
@@ -261,9 +261,9 @@ describe('stickyState', function () {
     // Test for issue #22
     it('should not re-resolve when the sticky state is reactivated', async function (done) {
       await testGo('main', { entered: 'main' });
-      await testGo('A._3', { exited: 'main', entered: [ 'A', 'A._3' ]});
+      await testGo('A._3', { exited: 'main', entered: [ 'A', 'A._3' ] });
       await testGo('A._1', { inactivated: 'A._3', entered: 'A._1' });
-      await testGo('A._3', { reactivated: 'A._3', inactivated: 'A._1'});
+      await testGo('A._3', { reactivated: 'A._3', inactivated: 'A._1' });
       expect(resolveCount).toBe(1);
 
       done();
@@ -271,14 +271,14 @@ describe('stickyState', function () {
 
     it('should re-resolve when the sticky state is exited/reentered', async function (done) {
       await testGo('main', { entered: 'main' });
-      await testGo('A._3', { exited: 'main', entered: [ 'A', 'A._3' ]});
+      await testGo('A._3', { exited: 'main', entered: [ 'A', 'A._3' ] });
       await testGo('A._1', { inactivated: 'A._3', entered: 'A._1' });
-      await testGo('A._3', { reactivated: 'A._3', inactivated: 'A._1'});
+      await testGo('A._3', { reactivated: 'A._3', inactivated: 'A._1' });
       expect(resolveCount).toBe(1);
 
       // orphans exited first in reverse order of when they were inactivated; from path exited last
       await testGo('main', { entered: 'main', exited: [ 'A', 'A._3', 'A._1' ] });
-      await testGo('A._3', { entered: [ 'A', 'A._3' ], exited: 'main'});
+      await testGo('A._3', { entered: [ 'A', 'A._3' ], exited: 'main' });
       expect(resolveCount).toBe(2);
 
       done();
@@ -292,7 +292,7 @@ describe('stickyState', function () {
         { name: 'main.product', url: '/products/:product_id' },
         { name: 'main.product.something' },
         { name: 'main.product.something.tab1', sticky: true, views: { 'tab1@main.product.something': {} } },
-        { name: 'main.product.something.tab2', sticky: true, views: { 'tab2@main.product.something': {} } }
+        { name: 'main.product.something.tab2', sticky: true, views: { 'tab2@main.product.something': {} } },
       ];
     }
 
@@ -300,12 +300,12 @@ describe('stickyState', function () {
       ssReset(getIssue24States());
     });
 
-    it("should reactivate", async function(done) {
+    it('should reactivate', async function(done) {
       await testGo('main');
       await $state.go('main.product', { 'product_id': 12345 });
 
       resetTransitionLog();
-      await testGo('main.product.something.tab1', { entered: ['main.product.something', 'main.product.something.tab1' ]} );
+      await testGo('main.product.something.tab1', { entered: ['main.product.something', 'main.product.something.tab1' ] } );
       await testGo('main.product.something.tab2', { entered: 'main.product.something.tab2', inactivated: 'main.product.something.tab1' });
       await testGo('main.product.something.tab1', { reactivated: 'main.product.something.tab1', inactivated: 'main.product.something.tab2' });
 
@@ -322,21 +322,21 @@ describe('stickyState', function () {
     it('should reactivate properly', async function (done) {
       await testGo('typedparam', undefined, { params: { boolparam: true } });
       await testGo('A');
-      expect(router.urlService.url()).toBe("/typedparam/1");
+      expect(router.urlService.url()).toBe('/typedparam/1');
       resetTransitionLog();
-      await testGo('typedparam', {inactivated: 'A', reactivated: 'typedparam'}, { params: { boolparam: true } });
+      await testGo('typedparam', { inactivated: 'A', reactivated: 'typedparam' }, { params: { boolparam: true } });
 
       done();
     });
 
     // Test 2 for issue #239
     it('should reactivate properly with equivalent json', async function (done) {
-      let objparam = { foo: "bar" };
+      const objparam = { foo: 'bar' };
       await testGo('typedparam2', undefined, { params: { jsonparam: objparam } });
       await testGo('A');
-      expect(router.urlService.url()).toBe("/typedparam2/%7B%22foo%22%3A%22bar%22%7D");
+      expect(router.urlService.url()).toBe('/typedparam2/%7B%22foo%22%3A%22bar%22%7D');
       resetTransitionLog();
-      await testGo('typedparam2', {inactivated: 'A', reactivated: 'typedparam2'}, { params: { jsonparam: { foo: "bar" } } });
+      await testGo('typedparam2', { inactivated: 'A', reactivated: 'typedparam2' }, { params: { jsonparam: { foo: 'bar' } } });
 
       done();
     });
@@ -347,7 +347,7 @@ describe('stickyState', function () {
       { name: 'main' },
       { name: 'main.other', sticky: true, views: { 'other@main': {} } },
       { name: 'main.product', sticky: true, views: { 'product@main': {} }, url: '/:product_id' },
-      { name: 'main.product.something' }
+      { name: 'main.product.something' },
     ];
   }
 
@@ -356,10 +356,10 @@ describe('stickyState', function () {
       ssReset(getParameterizedStates());
     });
 
-    it("should reload when params change", async function(done) {
+    it('should reload when params change', async function(done) {
       await testGo('main', { entered: 'main' });
 
-      let options = { params: { 'product_id': 12345 } };
+      const options = { params: { 'product_id': 12345 } };
       await testGo('main.product.something', { entered: pathFrom('main.product', 'main.product.something') }, options);
       await testGo('main.other', { entered: 'main.other', inactivated: [ 'main.product', 'main.product.something' ] });
       await testGo('main.product.something', { reactivated: ['main.product', 'main.product.something'], inactivated: 'main.other' }, options);
@@ -391,7 +391,7 @@ describe('stickyState', function () {
     });
 
     it('should reactivate child-of-sticky state ___1 when transitioning back to A._1.__1', async function (done) {
-      await testGo('aside', { entered: ['aside']});
+      await testGo('aside', { entered: ['aside'] });
       await testGo('A._1.__1', { exited: ['aside'],                         entered: pathFrom('A', 'A._1.__1') });
       await testGo('A._2.__2', { inactivated: pathFrom('A._1', 'A._1.__1'), entered: pathFrom('A._2', 'A._2.__2') });
       await testGo('aside',    { inactivated: pathFrom('A', 'A._2.__2') ,   entered: ['aside'] });
@@ -402,29 +402,29 @@ describe('stickyState', function () {
     });
 
 
-    describe("to an inactive state with inactive children", function() {
-      it("should exit inactive child states", async function (done) {
+    describe('to an inactive state with inactive children', function() {
+      it('should exit inactive child states', async function (done) {
         await testGo('A._3.__1', { entered: pathFrom('A', 'A._3.__1') });
-        await testGo('A._2', { inactivated: pathFrom('A._3', 'A._3.__1'), entered: "A._2" });
-        await testGo('A._3', { reactivated: "A._3", inactivated: "A._2", exited: "A._3.__1" });
+        await testGo('A._2', { inactivated: pathFrom('A._3', 'A._3.__1'), entered: 'A._2' });
+        await testGo('A._3', { reactivated: 'A._3', inactivated: 'A._2', exited: 'A._3.__1' });
 
         done();
       });
     });
 
-    describe("to an exited substate of an inactive state with inactive children", function() {
+    describe('to an exited substate of an inactive state with inactive children', function() {
       // Test for issue https://github.com/christopherthielen/ui-router-extras/issues/131
-      it("should not exit inactive child states", async function(done) {
+      it('should not exit inactive child states', async function(done) {
         await testGo('A._3.__1', { entered: pathFrom('A', 'A._3.__1') });
-        await testGo('A._2', { inactivated: pathFrom('A._3', 'A._3.__1'), entered: "A._2" });
-        await testGo('A._3.__2', { reactivated: "A._3", inactivated: "A._2", entered: "A._3.__2", exited: "A._3.__1" });
+        await testGo('A._2', { inactivated: pathFrom('A._3', 'A._3.__1'), entered: 'A._2' });
+        await testGo('A._3.__2', { reactivated: 'A._3', inactivated: 'A._2', entered: 'A._3.__2', exited: 'A._3.__1' });
 
         done();
       });
     });
 
-    describe("from a sticky state directly to a parent", function() {
-      it("should exit the sticky state", async function(done) {
+    describe('from a sticky state directly to a parent', function() {
+      it('should exit the sticky state', async function(done) {
         await testGo('A._1.__1.B.___1');
         resetTransitionLog();
         await testGo('A._1.__1.B', { exited: 'A._1.__1.B.___1' });
@@ -433,8 +433,8 @@ describe('stickyState', function () {
       });
     });
 
-    describe("directly to a parent of an inactive sticky state", function() {
-      it("should exit the inactive sticky", async function(done) {
+    describe('directly to a parent of an inactive sticky state', function() {
+      it('should exit the inactive sticky', async function(done) {
         await testGo('A._1.__1.B.___1');
         await testGo('A._2');
         resetTransitionLog();
@@ -446,11 +446,7 @@ describe('stickyState', function () {
   });
 
   describe('nested .go() transitions with parent attributes', function () {
-    beforeEach(function() {
-      ssReset(getNestedStickyStates());
-    });
-
-    function getNestedStickyStates() {
+    function getStatesWithParentAttribute() {
       /*
                aside
              /    (sticky)
@@ -472,19 +468,23 @@ describe('stickyState', function () {
       ];
     }
 
+    beforeEach(function() {
+      ssReset(getStatesWithParentAttribute());
+    });
+
     it('should have states attributes correctly set', function() {
-      let A = $state.get('A');
-      let A_1 = $state.get('A._1');
-      let A_1__1 = $state.get('A._1.__1');
-      let A_2 = $state.get('_2');
-      let A_2__2 = $state.get('__2');
+      const A = $state.get('A');
+      const A_1 = $state.get('A._1');
+      const A_1__1 = $state.get('A._1.__1');
+      const A_2 = $state.get('_2');
+      const A_2__2 = $state.get('__2');
 
       // Check includes
-      expect(A.$$state().includes).toEqual({'' : true, 'A': true});
-      expect(A_1.$$state().includes).toEqual({'' : true, 'A': true, 'A._1': true});
+      expect(A.$$state().includes).toEqual({ '' : true, 'A': true });
+      expect(A_1.$$state().includes).toEqual({ '' : true, 'A': true, 'A._1': true });
 
-      expect(A_2.$$state().includes).toEqual({'' : true, 'A': true, '_2': true});
-      expect(A_2__2.$$state().includes).toEqual({'' : true, 'A': true, '_2': true, '__2': true});
+      expect(A_2.$$state().includes).toEqual({ '' : true, 'A': true, '_2': true });
+      expect(A_2__2.$$state().includes).toEqual({ '' : true, 'A': true, '_2': true, '__2': true });
 
       // Check name attribute
       expect(A.$$state().name).toEqual('A');
@@ -535,14 +535,14 @@ describe('stickyState', function () {
   });
 
   describe('ui-router option reload: [state ref]', function() {
-    let bStates: StateDeclaration[] = [
+    const bStates: StateDeclaration[] = [
       { name: 'B', sticky: true },
       { name: 'B._1', sticky: true },
-      { name: 'B._1.__1', sticky: true }
+      { name: 'B._1.__1', sticky: true },
     ];
 
     beforeEach(function() {
-      let simpleStates = getSimpleStates();
+      const simpleStates = getSimpleStates();
       ssReset(bStates.concat(simpleStates));
     });
 
@@ -550,7 +550,7 @@ describe('stickyState', function () {
       await testGo('A._1', { entered: ['A', 'A._1' ] });
       await testGo('A._2', { inactivated: [ 'A._1' ],  entered: 'A._2' });
       await testGo('A._1', { reactivated: 'A._1', inactivated: 'A._2' });
-      await testGo('A._2', { inactivated: 'A._1', exited: 'A._2', entered: 'A._2' }, { reload: "A._2" });
+      await testGo('A._2', { inactivated: 'A._1', exited: 'A._2', entered: 'A._2' }, { reload: 'A._2' });
 
       done();
     });
@@ -561,9 +561,9 @@ describe('stickyState', function () {
       await testGo('A._1', { reactivated: 'A._1', inactivated: [ 'A._2', 'A._2.__1' ] });
       await testGo('A._2.__1', {
         inactivated: 'A._1', reactivated: 'A._2',
-        exited: [ 'A._2.__1' ], entered: [ 'A._2.__1' ]
-      }, { reload: "A._2.__1" });
-      await testGo('A._2.__1', { exited: [ 'A._2.__1' ], entered: [ 'A._2.__1' ] }, { reload: "A._2.__1" });
+        exited: [ 'A._2.__1' ], entered: [ 'A._2.__1' ],
+      }, { reload: 'A._2.__1' });
+      await testGo('A._2.__1', { exited: [ 'A._2.__1' ], entered: [ 'A._2.__1' ] }, { reload: 'A._2.__1' });
 
       done();
     });
@@ -571,13 +571,13 @@ describe('stickyState', function () {
     // Test case for #258
     it('should reload full tree of sticky states', async function(done) {
       await testGo('B._1.__1', { entered: [ 'B', 'B._1', 'B._1.__1' ] });
-      await testGo('B._1.__1', { exited : ['B', 'B._1', 'B._1.__1'], entered: ['B', 'B._1', 'B._1.__1'] }, {reload: true});
+      await testGo('B._1.__1', { exited : ['B', 'B._1', 'B._1.__1'], entered: ['B', 'B._1', 'B._1.__1'] }, { reload: true });
 
       done();
     });
   });
 
-  describe("$stickyStates.exitSticky()", function() {
+  describe('$stickyStates.exitSticky()', function() {
     beforeEach(async function(done) {
       ssReset(getSimpleStates());
       await testGo('A._1');
@@ -586,45 +586,45 @@ describe('stickyState', function () {
       done();
     });
 
-    it("should exit the states being exitSticky()", (done) => {
+    it('should exit the states being exitSticky()', (done) => {
       resetTransitionLog();
-      $stickyState.exitSticky("A._1").then(() => {
-        let tLog = tlog();
+      $stickyState.exitSticky('A._1').then(() => {
+        const tLog = tlog();
         expect(tLog.exited).toEqual(['A._1']);
 
         done();
       });
     });
 
-    it("should remove the state from the inactive list", async (done) => {
+    it('should remove the state from the inactive list', async (done) => {
       expect($stickyState.inactives().length).toBe(1);
-      await $stickyState.exitSticky("A._1");
+      await $stickyState.exitSticky('A._1');
       expect($stickyState.inactives().length).toBe(0);
 
       done();
     });
 
-    it("should throw if an unknown state is passed", () => {
+    it('should throw if an unknown state is passed', () => {
       let caught = null;
       try {
-        $stickyState.exitSticky("A.DOESNTEXIST");
+        $stickyState.exitSticky('A.DOESNTEXIST');
       } catch (error) { caught = error; }
-      expect(caught.detail).toEqual(Error("State not found: A.DOESNTEXIST"));
+      expect(caught.detail).toEqual(Error('State not found: A.DOESNTEXIST'));
       expect($stickyState.inactives().length).toBe(1);
       expect($stickyState.inactives()[0].name).toBe('A._1');
     });
 
-    it("should throw if an non-inactive state is passed", () => {
+    it('should throw if an non-inactive state is passed', () => {
       let caught = null;
       try {
-        $stickyState.exitSticky("A._2");
+        $stickyState.exitSticky('A._2');
       } catch (error) { caught = error; }
-      expect(caught).toEqual(Error("State not inactive: A._2"));
+      expect(caught).toEqual(Error('State not inactive: A._2'));
       expect($stickyState.inactives().length).toBe(1);
       expect($stickyState.inactives()[0].name).toBe('A._1');
     });
 
-    it("should reset all inactive states if passed no arguments", async (done) => {
+    it('should reset all inactive states if passed no arguments', async (done) => {
       expect($stickyState.inactives().length).toBe(1);
 
       await testGo('A._3');
@@ -637,7 +637,7 @@ describe('stickyState', function () {
     });
   });
 
-  describe("$state.go `exitSticky` option", function() {
+  describe('$state.go `exitSticky` option', function() {
     beforeEach(async function(done) {
       ssReset(getSimpleStates());
       await testGo('A._1');
@@ -646,37 +646,37 @@ describe('stickyState', function () {
       done();
     });
 
-    it("should exit an inactive state via `exitSticky` option", async (done) => {
+    it('should exit an inactive state via `exitSticky` option', async (done) => {
       await $state.go($state.current, {}, { exitSticky: 'A._1' });
       expect($stickyState.inactives().length).toBe(0);
 
       done();
     });
 
-    it("should exit the currently active sticky via `exitSticky` option after transitioning elsewhere", async (done) => {
-      await $state.go("A._1");
+    it('should exit the currently active sticky via `exitSticky` option after transitioning elsewhere', async (done) => {
+      await $state.go('A._1');
       expect($stickyState.inactives().length).toBe(1);
 
-      await $state.go("A._2", {}, { exitSticky: 'A._1' });
+      await $state.go('A._2', {}, { exitSticky: 'A._1' });
       expect($stickyState.inactives().length).toBe(0);
 
       done();
     });
 
-    it("should reset an inactive state via `exitSticky` option, while activating a different state", async (done) => {
-      await $state.go("A._3", {}, { exitSticky: 'A._1' });
+    it('should reset an inactive state via `exitSticky` option, while activating a different state', async (done) => {
+      await $state.go('A._3', {}, { exitSticky: 'A._1' });
       expect($stickyState.inactives().length).toBe(1);
       expect($stickyState.inactives()[0].name).toBe('A._2');
 
       done();
     });
 
-    it("should throw if the `exitSticky` option is part of the to path", () => {
+    it('should throw if the `exitSticky` option is part of the to path', () => {
       let caught = null;
       try {
-        $state.go("A._1", {}, { exitSticky: 'A._1' });
+        $state.go('A._1', {}, { exitSticky: 'A._1' });
       } catch (error) { caught = error; }
-      expect(caught).toEqual(Error("Can not exit a sticky state that is currently active/activating: A._1"));
+      expect(caught).toEqual(Error('Can not exit a sticky state that is currently active/activating: A._1'));
       expect($stickyState.inactives().length).toBe(1);
       expect($stickyState.inactives()[0].name).toBe('A._1');
     });
@@ -697,13 +697,13 @@ describe('stickyState', function () {
       });
 
       it('should fire a hook function when a state is inactivated', async (done) => {
-        let log = [];
+        const log = [];
 
         $transitions.onInactivate({ inactivating: 'A._1' }, (trans, state) => {
           log.push(state.name);
         });
 
-        await testGo('A._1', { entered: ['A', 'A._1']});
+        await testGo('A._1', { entered: ['A', 'A._1'] });
         expect(log).toEqual([]);
 
         await testGo('A._2', { entered: 'A._2', inactivated: 'A._1' });
@@ -715,16 +715,16 @@ describe('stickyState', function () {
 
     describe('onInactive function defined on a state', () => {
       it('should fire when the state is inactivated', async (done) => {
-        let log = [], states = getSimpleStates();
+        const log = [], states = getSimpleStates();
         states.find(state => state.name === 'A._1').onInactivate = (trans, state) => { log.push(state.name); };
         states.forEach(state => $registry.register(state));
-        
+
         await $state.go('A._1');
         expect(log).toEqual([]);
-  
+
         await $state.go('A._2');
         expect(log).toEqual(['A._1']);
-  
+
         done();
       });
     });
@@ -742,13 +742,13 @@ describe('stickyState', function () {
       });
 
       it('should fire a hook function when a state is reactivated', async (done) => {
-        let log = [];
+        const log = [];
 
         $transitions.onReactivate({ reactivating: 'A._1' }, (trans, state) => {
           log.push(state.name);
         });
 
-        await testGo('A._1', { entered: ['A', 'A._1']});
+        await testGo('A._1', { entered: ['A', 'A._1'] });
         expect(log).toEqual([]);
 
         await testGo('A._2', { entered: 'A._2', inactivated: 'A._1' });
@@ -763,7 +763,7 @@ describe('stickyState', function () {
 
     describe('onReactivate function defined on a state', () => {
       it('should fire when the state is reactivated', async (done) => {
-        let log = [], states = getSimpleStates();
+        const log = [], states = getSimpleStates();
         states.find(state => state.name === 'A._1').onReactivate = (trans, state) => { log.push(state.name); };
         states.forEach(state => $registry.register(state));
 
@@ -782,54 +782,54 @@ describe('stickyState', function () {
 
   });
 
-  describe("transitions to sibling of non-sticky inactive state", () => {
+  describe('transitions to sibling of non-sticky inactive state', () => {
     // Tests for issue #217
 
     beforeEach(function() {
       ssReset(getNestedStickyStates());
     });
 
-    it("should exit the inactive state", async function(done) {
-      await testGo('A._1.__1', { entered: ['A', 'A._1', 'A._1.__1']});
-      await testGo('A._2.__1', { entered: ['A._2', 'A._2.__1'], inactivated: ['A._1', 'A._1.__1']});
+    it('should exit the inactive state', async function(done) {
+      await testGo('A._1.__1', { entered: ['A', 'A._1', 'A._1.__1'] });
+      await testGo('A._2.__1', { entered: ['A._2', 'A._2.__1'], inactivated: ['A._1', 'A._1.__1'] });
       await testGo('A._1.__2', {
         entered: ['A._1.__2'],
         exited: ['A._1.__1'],
         reactivated: ['A._1'],
-        inactivated: ['A._2', 'A._2.__1']
+        inactivated: ['A._2', 'A._2.__1'],
       });
 
       done();
     });
 
-    it("should exit the inactive state tree", async function(done) {
-      await testGo('A._1.__1.B', { entered: ['A', 'A._1', 'A._1.__1', 'A._1.__1.B']});
-      await testGo('A._2.__1', { entered: ['A._2', 'A._2.__1'], inactivated: ['A._1', 'A._1.__1', 'A._1.__1.B']});
+    it('should exit the inactive state tree', async function(done) {
+      await testGo('A._1.__1.B', { entered: ['A', 'A._1', 'A._1.__1', 'A._1.__1.B'] });
+      await testGo('A._2.__1', { entered: ['A._2', 'A._2.__1'], inactivated: ['A._1', 'A._1.__1', 'A._1.__1.B'] });
       await testGo('A._1.__2', {
         entered: ['A._1.__2'],
         exited: ['A._1.__1', 'A._1.__1.B'],
         reactivated: ['A._1'],
-        inactivated: ['A._2', 'A._2.__1']
+        inactivated: ['A._2', 'A._2.__1'],
       });
 
       done();
     });
   });
 
-  describe("transitions between sticky states, where params should be inherited", function() {
+  describe('transitions between sticky states, where params should be inherited', function() {
     beforeEach(function() {
       ssReset(getNestedStickyStates());
     });
 
-    it("should reactivate the sticky state", async function(done) {
-      await testGo('inherit.one', { entered: ['inherit', 'inherit.one'] }, { params: { id: "1" } } );
-      expect($state.params['id']).toBe("1");
+    it('should reactivate the sticky state', async function(done) {
+      await testGo('inherit.one', { entered: ['inherit', 'inherit.one'] }, { params: { id: '1' } } );
+      expect($state.params['id']).toBe('1');
 
       await testGo('inherit.two', { entered: 'inherit.two', inactivated: 'inherit.one' }, { inherit: true } );
-      expect($state.params['id']).toBe("1");
+      expect($state.params['id']).toBe('1');
 
       await testGo('inherit.one', { reactivated: 'inherit.one', inactivated: 'inherit.two' }, { inherit: true } );
-      expect($state.params['id']).toBe("1");
+      expect($state.params['id']).toBe('1');
 
       done();
     });
