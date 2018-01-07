@@ -2,10 +2,10 @@ import {
   UIRouter, PathUtils, StateOrName, StateObject, StateDeclaration, PathNode, TreeChanges, Transition, UIRouterPluginBase,
   TransitionHookPhase, TransitionHookScope, TransitionServicePluginAPI, HookMatchCriteria, TransitionStateHookFn,
   HookRegOptions, PathType, find, tail, isString, isArray, inArray, removeFrom, pushTo, identity, anyTrueR, assertMap,
-  uniqR, defaultTransOpts, HookMatchCriterion
-} from "@uirouter/core";
+  uniqR, defaultTransOpts, HookMatchCriterion,
+} from '@uirouter/core';
 
-declare module "@uirouter/core/lib/state/interface" {
+declare module '@uirouter/core/lib/state/interface' {
   interface StateDeclaration {
     sticky?: boolean;
     onInactivate?: TransitionStateHookFn;
@@ -13,7 +13,7 @@ declare module "@uirouter/core/lib/state/interface" {
   }
 }
 
-declare module "@uirouter/core/lib/state/stateObject" {
+declare module '@uirouter/core/lib/state/stateObject' {
   interface StateObject {
     sticky?: boolean;
     onInactivate?: TransitionStateHookFn;
@@ -21,14 +21,14 @@ declare module "@uirouter/core/lib/state/stateObject" {
   }
 }
 
-declare module "@uirouter/core/lib/transition/transitionService" {
+declare module '@uirouter/core/lib/transition/transitionService' {
   interface TransitionService {
     onInactivate: (criteria: HookMatchCriteria, callback: TransitionStateHookFn, options?: HookRegOptions) => Function;
     onReactivate: (criteria: HookMatchCriteria, callback: TransitionStateHookFn, options?: HookRegOptions) => Function;
   }
 }
 
-declare module "@uirouter/core/lib/transition/interface" {
+declare module '@uirouter/core/lib/transition/interface' {
   interface TransitionOptions {
     exitSticky?: StateOrName[]|StateOrName;
   }
@@ -71,7 +71,7 @@ const ancestorPath = (state: StateObject) =>
     state.parent ? ancestorPath(state.parent).concat(state) : [state];
 
 const isDescendantOf = (_ancestor: PathNode) => {
-  let ancestor = _ancestor.state;
+  const ancestor = _ancestor.state;
   return (node: PathNode) =>
   ancestorPath(node.state).indexOf(ancestor) !== -1;
 };
@@ -94,12 +94,12 @@ function findStickyAncestor(state: StateObject) {
  */
 function nodeDepthThenInactivateOrder(inactives: PathNode[]) {
   return function(l: PathNode, r: PathNode): number {
-    let depthDelta = (l.state.path.length - r.state.path.length);
+    const depthDelta = (l.state.path.length - r.state.path.length);
     return depthDelta !== 0 ? depthDelta : inactives.indexOf(r) - inactives.indexOf(l);
   };
 }
 export class StickyStatesPlugin extends UIRouterPluginBase {
-  name = "sticky-states";
+  name = 'sticky-states';
   private _inactives: PathNode[] = [];
   private pluginAPI: TransitionServicePluginAPI;
 
@@ -127,23 +127,23 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
 
   private _defineStickyPaths() {
     // let paths = this.pluginAPI._getPathTypes();
-    this.pluginAPI._definePathType("inactivating", TransitionHookScope.STATE);
-    this.pluginAPI._definePathType("reactivating", TransitionHookScope.STATE);
+    this.pluginAPI._definePathType('inactivating', TransitionHookScope.STATE);
+    this.pluginAPI._definePathType('reactivating', TransitionHookScope.STATE);
   }
 
   private _defineStickyEvents() {
-    let paths = this.pluginAPI._getPathTypes();
-    this.pluginAPI._defineEvent("onInactivate", TransitionHookPhase.RUN, 5, paths.inactivating, true);
-    this.pluginAPI._defineEvent("onReactivate", TransitionHookPhase.RUN, 35, paths.reactivating);
+    const paths = this.pluginAPI._getPathTypes();
+    this.pluginAPI._defineEvent('onInactivate', TransitionHookPhase.RUN, 5, paths.inactivating, true);
+    this.pluginAPI._defineEvent('onReactivate', TransitionHookPhase.RUN, 35, paths.reactivating);
   }
 
   // Process state.onInactivate or state.onReactivate callbacks
   private _addStateCallbacks() {
-    let inactivateCriteria = { inactivating: state => !!state.onInactivate };
+    const inactivateCriteria = { inactivating: state => !!state.onInactivate };
     this.router.transitionService.onInactivate(inactivateCriteria, (trans: Transition, state: StateDeclaration) =>
         state.onInactivate(trans, state));
 
-    let reactivateCriteria = { reactivating: state => !!state.onReactivate };
+    const reactivateCriteria = { reactivating: state => !!state.onReactivate };
     this.router.transitionService.onReactivate(reactivateCriteria, (trans: Transition, state: StateDeclaration) =>
         state.onReactivate(trans, state));
   }
@@ -154,27 +154,27 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
     let exitSticky = trans.options().exitSticky || [];
     if (!isArray(exitSticky)) exitSticky = [exitSticky];
 
-    let $state = trans.router.stateService;
+    const $state = trans.router.stateService;
 
-    let states: StateObject[] = (exitSticky as any[])
-        .map(assertMap((stateOrName) => $state.get(stateOrName), (state) => "State not found: " + state))
+    const states: StateObject[] = (exitSticky as any[])
+        .map(assertMap((stateOrName) => $state.get(stateOrName), (state) => 'State not found: ' + state))
         .map(state => state.$$state());
 
-    let potentialExitingStickies = this._inactives.concat(tc.inactivating).reduce(uniqR, []) as PathNode[];
+    const potentialExitingStickies = this._inactives.concat(tc.inactivating).reduce(uniqR, []) as PathNode[];
 
-    let findInactive = state => potentialExitingStickies.find(node => node.state === state);
-    const notInactiveMsg = (state) => "State not inactive: " + state;
-    let exitingInactives = states.map(assertMap(findInactive, notInactiveMsg));
-    let exiting = potentialExitingStickies.filter(isDescendantOfAny(exitingInactives));
+    const findInactive = state => potentialExitingStickies.find(node => node.state === state);
+    const notInactiveMsg = (state) => 'State not inactive: ' + state;
+    const exitingInactives = states.map(assertMap(findInactive, notInactiveMsg));
+    const exiting = potentialExitingStickies.filter(isDescendantOfAny(exitingInactives));
 
-    let inToPathMsg = (node) => "Can not exit a sticky state that is currently active/activating: " + node.state.name;
+    const inToPathMsg = (node) => 'Can not exit a sticky state that is currently active/activating: ' + node.state.name;
     exiting.map(assertMap(node => !inArray(tc.to, node), inToPathMsg));
 
     return exiting;
   }
 
   private _calculateStickyTreeChanges(trans: Transition): TreeChanges {
-    let tc: TreeChanges = trans.treeChanges();
+    const tc: TreeChanges = trans.treeChanges();
     tc.inactivating = [];
     tc.reactivating = [];
 
@@ -193,10 +193,10 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
 
     // Simulate a transition where the fromPath is a clone of the toPath, but use the inactivated nodes
     // This will calculate which inactive nodes that need to be exited/entered due to param changes
-    let inactiveFromPath = tc.retained.concat(tc.entering.map(node => this._getInactive(node) || null)).filter(identity);
-    let simulatedTC = PathUtils.treeChanges(inactiveFromPath, tc.to, trans.options().reloadState);
+    const inactiveFromPath = tc.retained.concat(tc.entering.map(node => this._getInactive(node) || null)).filter(identity);
+    const simulatedTC = PathUtils.treeChanges(inactiveFromPath, tc.to, trans.options().reloadState);
 
-    let shouldRewritePaths = ['retained', 'entering', 'exiting'].some(path => !!simulatedTC[path].length);
+    const shouldRewritePaths = ['retained', 'entering', 'exiting'].some(path => !!simulatedTC[path].length);
 
     if (shouldRewritePaths) {
       // The 'retained' nodes from the simulated transition's TreeChanges are the ones that will be reactivated.
@@ -220,22 +220,22 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
      * Determine which additional inactive states should be exited
      ****************/
 
-    let inactives = this._inactives;
+    const inactives = this._inactives;
 
     // Any inactive state whose parent state is exactly activated will be exited
-    let childrenOfToState = inactives.filter(isChildOf(tail(tc.to)));
+    const childrenOfToState = inactives.filter(isChildOf(tail(tc.to)));
 
     // Any inactive non-sticky state whose parent state is activated (and is itself not activated) will be exited
-    let childrenOfToPath = inactives.filter(isChildOfAny(tc.to))
+    const childrenOfToPath = inactives.filter(isChildOfAny(tc.to))
         .filter(notInArray(tc.to))
         .filter(node => !node.state.sticky);
 
-    let exitingChildren = childrenOfToState.concat(childrenOfToPath).filter(notInArray(tc.exiting));
+    const exitingChildren = childrenOfToState.concat(childrenOfToPath).filter(notInArray(tc.exiting));
 
-    let exitingRoots = tc.exiting.concat(exitingChildren);
+    const exitingRoots = tc.exiting.concat(exitingChildren);
 
     // Any inactive descendant of an exiting state will be exited
-    let orphans = inactives.filter(isDescendantOfAny(exitingRoots))
+    const orphans = inactives.filter(isDescendantOfAny(exitingRoots))
         .filter(notInArray(exitingRoots))
         .concat(exitingChildren)
         .reduce<PathNode[]>(uniqR, [])
@@ -258,7 +258,7 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
     // console.table(tcCopy);
 
     // Process the inactive sticky states that should be exited
-    let exitSticky = this._calculateExitSticky(tc, trans);
+    const exitSticky = this._calculateExitSticky(tc, trans);
     exitSticky.filter(notInArray(tc.exiting)).forEach(pushTo(tc.exiting));
 
     // Also process the active sticky states that are about to be inactivated, but should be exited
@@ -299,13 +299,13 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
   exitSticky(states: StateOrName);
   exitSticky(states: StateOrName[]);
   exitSticky(states?: any) {
-    let $state = this.router.stateService;
+    const $state = this.router.stateService;
     if (states === undefined) states = this._inactives.map(node => node.state.name);
     if (isString(states)) states = [states];
 
     return $state.go($state.current, {}, {
       inherit: true,
-      exitSticky: states
+      exitSticky: states,
     });
   }
 
