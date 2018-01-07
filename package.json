@@ -10,8 +10,8 @@
     "watch": "run-p watch:*",
     "watch:buildjs": "tsc -w",
     "watch:test": "karma start --singleRun=false --autoWatch=true --autoWatchInterval=1",
-    "prepare": "npm run build",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
+    "release": "release",
     "debug": "karma start --singleRun=false --autoWatch=true --autoWatchInterval=1 --browsers=ChromeCanary --beep"
   },
   "homepage": "https://ui-router.github.io",
