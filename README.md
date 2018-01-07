@@ -1,5 +1,7 @@
 # Sticky States
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ui-router/sticky-states.svg)](https://greenkeeper.io/)
+
 ### Sticky States for UI-Router 1.0 &nbsp;[![Build Status](https://travis-ci.org/ui-router/sticky-states.svg?branch=master)](https://travis-ci.org/ui-router/sticky-states)
 
 ## Overview and Use Case
