@@ -6,7 +6,7 @@ import {
 } from '@uirouter/core';
 
 declare module '@uirouter/core/lib/state/interface' {
-  interface StateDeclaration {
+  interface StateDeclaration { // tslint:disable-line:no-shadowed-variable
     sticky?: boolean;
     onInactivate?: TransitionStateHookFn;
     onReactivate?: TransitionStateHookFn;
@@ -14,7 +14,7 @@ declare module '@uirouter/core/lib/state/interface' {
 }
 
 declare module '@uirouter/core/lib/state/stateObject' {
-  interface StateObject {
+  interface StateObject { // tslint:disable-line:no-shadowed-variable
     sticky?: boolean;
     onInactivate?: TransitionStateHookFn;
     onReactivate?: TransitionStateHookFn;
@@ -33,7 +33,7 @@ declare module '@uirouter/core/lib/transition/interface' {
     exitSticky?: StateOrName[]|StateOrName;
   }
 
-  interface TreeChanges {
+  interface TreeChanges { // tslint:disable-line:no-shadowed-variable
     inactivating?: PathNode[];
     reactivating?: PathNode[];
   }
@@ -48,7 +48,7 @@ declare module '@uirouter/core/lib/transition/interface' {
     reactivating: PathType;
   }
 
-  export interface HookMatchCriteria {
+  export interface HookMatchCriteria { // tslint:disable-line:no-shadowed-variable
     /** A [[HookMatchCriterion]] to match any state that would be inactivating */
     inactivating?: HookMatchCriterion;
     /** A [[HookMatchCriterion]] to match any state that would be reactivating */
@@ -81,9 +81,9 @@ const isDescendantOfAny = (ancestors: PathNode[]) =>
         ancestors.map(ancestor => isDescendantOf(ancestor)(node))
             .reduce(anyTrueR, false);
 
-function findStickyAncestor(state: StateObject) {
-  return state.sticky ? state : findStickyAncestor(state.parent);
-}
+// function findStickyAncestor(state: StateObject) {
+//   return state.sticky ? state : findStickyAncestor(state.parent);
+// }
 
 
 
