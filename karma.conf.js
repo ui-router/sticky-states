@@ -40,21 +40,15 @@ module.exports = function (karma) {
       plugins: [ new BeepPlugin() ],
 
       resolve: {
-        modulesDirectories: ['node_modules'],
-        extensions: ['', '.js', '.ts']
+        extensions: ['.js', '.ts']
       },
 
       module: {
         loaders: [
-          // { test: /\.ts$/, loader: "awesome-typescript-loader?tsconfig=test/tsconfig.json" }
           { test: /\.ts$/, loader: "ts-loader?configFile=test/tsconfig.json" }
         ]
       },
 
-    },
-
-    webpackMiddleware: {
-      stats: { chunks: false },
     },
 
     files: ['test/index.js'],
