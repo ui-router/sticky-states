@@ -28,18 +28,19 @@ if (MINIFY) plugins.push(uglify(uglifyOpts));
 var extension = MINIFY ? ".min.js" : ".js";
 
 const CONFIG = {
-  moduleName: pkg.name,
-  entry: 'lib-esm/stickyStates.js',
-  dest: '_bundles/ui-router-sticky-states' + extension,
-  external: '@uirouter/core',
-  globals: { '@uirouter/core': '@uirouter/core' },
-  
+  input: 'lib-esm/stickyStates.js',
+  output: {
+    name: pkg.name,
+    file: '_bundles/ui-router-sticky-states' + extension,
+    globals: { '@uirouter/core': '@uirouter/core' },
+    sourcemap: true,
+    format: 'umd',
+    banner: banner,
+    exports: 'named',
 
-  sourceMap: true,
-  format: 'umd',
-  exports: 'named',
+  },
+  external: '@uirouter/core',
   plugins: plugins,
-  banner: banner,
 };
 
 export default CONFIG;
