@@ -832,4 +832,33 @@ describe('stickyState', function () {
     });
 
   });
+
+  describe('transitions with dynamic parameters', function() {
+    beforeEach(function() {
+      const states = [
+        { name: 'stateA' },
+        {
+          name: 'stateB',
+          url: '/stateB?paramB',
+          sticky: true,
+          params: { paramB: { dynamic: true } },
+        }
+      ];
+
+      ssReset(states);
+    });
+
+    it('should process dynamic parameter updates when reactivating a sticky state', async function(done) {
+      await testGo('stateB', { entered: 'stateB' }, { params: { paramB: '1' } } );
+      expect($state.params['paramB']).toBe('1');
+
+      await testGo('stateA', { entered: 'stateA', inactivated: 'stateB' });
+      await testGo('stateB', { exited: 'stateA', reactivated: 'stateB' }, { params: { paramB: '2' } } );
+
+      expect($state.params['paramB']).toBe('2');
+
+      done();
+    });
+
+  });
 });
