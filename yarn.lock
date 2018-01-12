@@ -3937,9 +3937,9 @@ rollup-pluginutils@^2.0.1:
     estree-walker "^0.3.0"
     micromatch "^2.3.11"
 
-rollup@^0.53.3:
-  version "0.53.3"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.53.3.tgz#e7b6777623df912bd0ca30dc24be791d6ebc8e5a"
+rollup@0.54.0:
+  version "0.54.0"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.54.0.tgz#0641b8154ba02706464285d2ead924c486b48ba9"
 
 safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.1"
@@ -4700,9 +4700,9 @@ watchpack@^1.4.0:
     chokidar "^1.7.0"
     graceful-fs "^4.1.2"
 
-webpack-beep-plugin@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/webpack-beep-plugin/-/webpack-beep-plugin-0.0.1.tgz#c8232804d0444b8225be3f8b3bb691a750b1a0a3"
+webpack-beep-plugin@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/webpack-beep-plugin/-/webpack-beep-plugin-1.0.0.tgz#c667478d291d9b5c222396ac0bf1f47dd840a2df"
   dependencies:
     webpack "^1.12.4"
 
