@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <script src="bundle.js"></script>
+  </head>
+  <body>
+    <div ng-app="app">
+      <a ui-sref="home" ui-sref-active="active">home</a>
+      <a ui-sref="about" ui-sref-active="active">about</a>
+
+      <div ui-view="home" ng-show="$state.includes('home')"></div>
+      <div ui-view="about" ng-show="$state.includes('about')"></div>
+    </div>
+  </body>
+</html
