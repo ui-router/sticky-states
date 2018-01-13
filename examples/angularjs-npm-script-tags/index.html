@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <script src="node_modules/angular/angular.js"></script>
+    <script src="node_modules/@uirouter/core/_bundles/ui-router-core.js"></script>
+    <script src="node_modules/@uirouter/angularjs/release/ui-router-angularjs.js"></script>
+    <script src="node_modules/@uirouter/sticky-states/_bundles/ui-router-sticky-states.js"></script>
+    <script src="node_modules/@uirouter/visualizer/_bundles/ui-router-visualizer.js"></script>
+    <script src="index.js"></script>
+  </head>
+  <body>
+    <div ng-app="app">
+      <a ui-sref="home" ui-sref-active="active">home</a>
+      <a ui-sref="about" ui-sref-active="active">about</a>
+
+      <div ui-view="home" ng-show="$state.includes('home')"></div>
+      <div ui-view="about" ng-show="$state.includes('about')"></div>
+    </div>
+  </body>
+</html
