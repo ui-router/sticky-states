@@ -4,14 +4,13 @@
   "description": "AngularJS/bower sticky states example",
   "main": "index.js",
   "scripts": {
+    "postinstall": "bower install",
     "start": "lite-server"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "bower": "^1.8.2",
-    "bower-npm-install": "^0.5.11",
-    "bower-npm-resolver": "^0.8.2",
     "lite-server": "^2.3.0"
   },
   "dependencies": {
