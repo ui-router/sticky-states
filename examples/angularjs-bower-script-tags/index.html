@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script>
+      // Shim @uirouter/core from the angular-ui-router.js mega-bundle
+      window['@uirouter/core'] = window['@uirouter/angularjs'];
+    </script>
+    <script src="node_modules/@uirouter/sticky-states/_bundles/ui-router-sticky-states.js"></script>
+    <script src="node_modules/@uirouter/visualizer/_bundles/ui-router-visualizer.js"></script>
+    <script src="index.js"></script>
+  </head>
+  <body>
+    <div ng-app="app">
+      <a ui-sref="home" ui-sref-active="active">home</a>
+      <a ui-sref="about" ui-sref-active="active">about</a>
+
+      <div ui-view="home" ng-show="$state.includes('home')"></div>
+      <div ui-view="about" ng-show="$state.includes('about')"></div>
+    </div>
+  </body>
+</html

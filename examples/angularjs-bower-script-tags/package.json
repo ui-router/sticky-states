@@ -1,0 +1,21 @@
+{
+  "name": "angularjs-bower",
+  "version": "1.0.0",
+  "description": "AngularJS/bower sticky states example",
+  "main": "index.js",
+  "scripts": {
+    "start": "lite-server"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "bower": "^1.8.2",
+    "bower-npm-install": "^0.5.11",
+    "bower-npm-resolver": "^0.8.2",
+    "lite-server": "^2.3.0"
+  },
+  "dependencies": {
+    "@uirouter/sticky-states": "^1.4.1",
+    "@uirouter/visualizer": "^5.1.3"
+  }
+}
