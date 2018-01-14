@@ -47,7 +47,7 @@
   "devDependencies": {
     "@types/jasmine": "^2.2.34",
     "@types/lodash": "^4.14.38",
-    "@uirouter/core": "^5.0.1",
+    "@uirouter/core": "5.0.13",
     "@uirouter/publish-scripts": "^2.2.4",
     "jasmine-core": "^2.4.1",
     "karma": "^2.0.0",

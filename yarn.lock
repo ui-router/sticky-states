@@ -10,7 +10,7 @@
   version "4.14.92"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.92.tgz#6e3cb0b71a1e12180a47a42a744e856c3ae99a57"
 
-"@uirouter/core@^5.0.1":
+"@uirouter/core@5.0.13":
   version "5.0.13"
   resolved "https://registry.yarnpkg.com/@uirouter/core/-/core-5.0.13.tgz#e1b31626c393cbdd82651755ff1ce3fc55163fd0"
 
@@ -4700,9 +4700,9 @@ watchpack@^1.4.0:
     chokidar "^1.7.0"
     graceful-fs "^4.1.2"
 
-webpack-beep-plugin@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/webpack-beep-plugin/-/webpack-beep-plugin-0.0.1.tgz#c8232804d0444b8225be3f8b3bb691a750b1a0a3"
+webpack-beep-plugin@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/webpack-beep-plugin/-/webpack-beep-plugin-1.0.0.tgz#c667478d291d9b5c222396ac0bf1f47dd840a2df"
   dependencies:
     webpack "^1.12.4"
 
