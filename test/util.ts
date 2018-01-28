@@ -1,3 +1,5 @@
+import {StateOrName, Transition, TransitionOptions, UIRouter} from '@uirouter/core';
+
 var tLog, tExpected;
 import * as _ from "lodash";
 
@@ -74,7 +76,16 @@ export function pathFrom(start, end) {
   return path;
 }
 
-export function getTestGoFn($uiRouter) {
+export interface TAdditional {
+  [key: string]: string | string[];
+  inactivated?: string | string[];
+  exited?: string | string[];
+}
+
+export type TOptions = TransitionOptions & { redirect?: any, params?: any };
+
+export function getTestGoFn($uiRouter: UIRouter) {
+  if (!$uiRouter) return null;
   var $state = $uiRouter.stateService;
 
 /**
@@ -101,30 +112,18 @@ export function getTestGoFn($uiRouter) {
  * @param options: options which modify the expected transition behavior
  *    { redirect: redirectstatename }
  */
-async function testGo(state, tAdditional, options) {
+async function testGo(state: string, tAdditional?: TAdditional, options?: TOptions): Promise<Transition> {
   if (tAdditional && Array.isArray(tAdditional.inactivated)) tAdditional.inactivated.reverse();
   if (tAdditional && Array.isArray(tAdditional.exited)) tAdditional.exited.reverse();
 
-  await $state.go(state, options && options.params, options);
+  const goPromise = $state.go(state, options && options.params, options);
+  await goPromise;
 
-  var expectRedirect = options && options.redirect;
+  const expectRedirect = options && options.redirect;
   if (!expectRedirect)
     expect($state.current.name).toBe(state);
   else
     expect($state.current.name).toBe(expectRedirect);
-
-  // var root = $state.$current.path[0].parent;
-  // var __inactives = root.parent;
-
-  // If ct.ui.router.extras.sticky module is included, then root.parent holds the inactive states/views
-  // if (__inactives) {
-  //   var __inactiveViews = _.keys(__inactives.locals);
-  //   var extra = _.difference(__inactiveViews, tLog.views);
-  //   var missing = _.difference(tLog.views, __inactiveViews);
-  //
-  //   expect("Extra Views: " + extra).toEqual("Extra Views: " + []);
-  //   expect("Missing Views: " + missing).toEqual("Missing Views: " + []);
-  // }
 
   if (tExpected && tAdditional) {
     // append all arrays in tAdditional to arrays in tExpected
@@ -138,7 +137,7 @@ async function testGo(state, tAdditional, options) {
     });
   }
 
-  return Promise.resolve();
+  return goPromise.transition;
 }
 
 return testGo;
