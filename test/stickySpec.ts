@@ -1,7 +1,7 @@
 import { getTestGoFn, addCallbacks, resetTransitionLog, pathFrom, equalityTester, tlog } from './util';
 import {
   UIRouter, StateService, StateRegistry, StateDeclaration, ViewService, TransitionService, PathNode, _ViewDeclaration,
-  isObject, ViewConfigFactory, ViewConfig,
+  isObject, ViewConfigFactory, ViewConfig, Transition,
 } from '@uirouter/core';
 import '../src/stickyStates';
 import { StickyStatesPlugin } from '../src/stickyStates';
@@ -13,7 +13,7 @@ let $transitions: TransitionService;
 let $view: ViewService;
 let $registry: StateRegistry;
 let $stickyState: StickyStatesPlugin;
-let testGo: Function;
+let testGo = getTestGoFn(null);
 
 function ssReset(newStates: StateDeclaration[]) {
   resetTransitionLog();
@@ -834,6 +834,10 @@ describe('stickyState', function () {
   });
 
   describe('transitions with dynamic parameters', function() {
+    const stateBNode = (path: PathNode[]) => {
+      return path.find(node => node.state.name === 'stateB');
+    };
+
     beforeEach(function() {
       const states = [
         { name: 'stateA' },
@@ -848,7 +852,39 @@ describe('stickyState', function () {
       ssReset(states);
     });
 
-    it('should process dynamic parameter updates when reactivating a sticky state', async function(done) {
+    it('should update dynamic parameter values when reactivating a state', async function(done) {
+      await testGo('stateB', { entered: 'stateB' }, { params: { paramB: '1' } });
+      expect($state.params['paramB']).toBe('1');
+
+      await testGo('stateA', { entered: 'stateA', inactivated: 'stateB' });
+
+      const transition = await testGo('stateB', { exited: 'stateA', reactivated: 'stateB' }, { params: { paramB: '2' } });
+      const tc = transition.treeChanges();
+
+      expect(stateBNode(tc.retained)).toBeUndefined();
+      expect(stateBNode(tc.reactivating)).toBeDefined();
+      expect(stateBNode(tc.reactivating).paramValues.paramB).toBe('2');
+      expect($state.params.paramB).toBe('2');
+
+      done();
+    });
+
+    it('should update dynamic parameter values when retaining a state', async function(done) {
+      await testGo('stateB', { entered: 'stateB' }, { params: { paramB: '1' } });
+      expect($state.params['paramB']).toBe('1');
+
+      const transition = await testGo('stateB', null, { params: { paramB: '2' } });
+      await transition.promise;
+      const tc = transition.treeChanges();
+
+      expect(stateBNode(tc.reactivating)).toBeUndefined();
+      expect(stateBNode(tc.retained)).toBeDefined();
+      expect($state.params.paramB).toBe('2');
+
+      done();
+    });
+
+    it('should update dynamic parameters when reactivating a sticky state', async function(done) {
       await testGo('stateB', { entered: 'stateB' }, { params: { paramB: '1' } } );
       expect($state.params['paramB']).toBe('1');
 
@@ -859,6 +895,5 @@ describe('stickyState', function () {
 
       done();
     });
-
   });
 });
