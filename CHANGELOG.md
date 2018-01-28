@@ -1,3 +1,13 @@
+# 1.5.0 (2018-01-28)
+[Compare `@uirouter/sticky-states` versions 1.4.0 and 1.5.0](https://github.com/ui-router/sticky-states/compare/1.4.0...1.5.0)
+
+### Bug Fixes
+
+* **sticky:** Update dynamic parameters when calculating treeChanges (i.e., for `reactivating` and `to` paths) ([3696bf9](https://github.com/ui-router/sticky-states/commit/3696bf9))
+
+
+
+
 <a name="1.0.0"></a>
 This is the first release of Sticky States for UI-Router 1.0+
 
