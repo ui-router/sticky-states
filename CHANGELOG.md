@@ -1,11 +1,42 @@
 # 1.5.0 (2018-01-28)
-[Compare `@uirouter/sticky-states` versions 1.4.0 and 1.5.0](https://github.com/ui-router/sticky-states/compare/1.4.0...1.5.0)
+[Compare `@uirouter/sticky-states` versions 1.4.1 and 1.5.0](https://github.com/ui-router/sticky-states/compare/1.4.1...1.5.0)
 
 ### Bug Fixes
 
 * **sticky:** Update dynamic parameters when calculating treeChanges (i.e., for `reactivating` and `to` paths) ([3696bf9](https://github.com/ui-router/sticky-states/commit/3696bf9))
 
 
+<a name="1.4.1"></a>
+
+[Compare `@uirouter/sticky-states` versions 1.4.0 and 1.4.1](https://github.com/ui-router/sticky-states/compare/1.4.0...1.4.1)
+
+
+
+<a name="1.4.0"></a>
+
+[Compare `@uirouter/sticky-states` versions 1.3.0 and 1.4.0](https://github.com/ui-router/sticky-states/compare/1.3.0...1.4.0)
+
+
+
+
+<a name="1.3.0"></a>
+
+[Compare `@uirouter/sticky-states` versions 1.2.0 and 1.3.0](https://github.com/ui-router/sticky-states/compare/1.2.0...1.3.0)
+
+### Bug Fixes
+
+* **exitSticky:** Allow exitingSticky of the current sticky state, when transitioning to a different state ([154de09](https://github.com/ui-router/sticky-states/commit/154de09))
+
+
+
+
+<a name="1.2.0"></a>
+[Compare `@uirouter/sticky-states` versions 1.0.0 and 1.2.0](https://github.com/ui-router/sticky-states/compare/1.0.0...1.2.0)
+
+### Bug Fixes
+
+* **build:** Add missing index.ts file to match package.json `main:` entry ([bfe70b5](https://github.com/ui-router/sticky-states/commit/bfe70b5))
+* **sticky:** Move sticky states hook to hither priority (100), so it is invoked before the transition is processed by ui-router-core `coreResolcables` onCreate hook ([b61a22b](https://github.com/ui-router/sticky-states/commit/b61a22b))
 
 
 <a name="1.0.0"></a>
