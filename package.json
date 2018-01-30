@@ -48,7 +48,7 @@
     "@types/jasmine": "2.8.6",
     "@types/lodash": "4.14.97",
     "@uirouter/core": "5.0.14",
-    "@uirouter/publish-scripts": "2.2.4",
+    "@uirouter/publish-scripts": "2.2.9",
     "jasmine-core": "2.9.1",
     "karma": "2.0.0",
     "karma-chrome-launcher": "~2.2.0",
