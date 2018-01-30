@@ -46,8 +46,8 @@
   },
   "devDependencies": {
     "@types/jasmine": "2.8.6",
-    "@types/lodash": "4.14.97",
-    "@uirouter/core": "5.0.14",
+    "@types/lodash": "4.14.98",
+    "@uirouter/core": "5.0.16",
     "@uirouter/publish-scripts": "2.2.9",
     "jasmine-core": "2.9.1",
     "karma": "2.0.0",
@@ -65,11 +65,11 @@
     "rollup-plugin-sourcemaps": "0.4.2",
     "rollup-plugin-uglify": "3.0.0",
     "shx": "0.2.2",
-    "ts-loader": "3.3.1",
+    "ts-loader": "3.4.0",
     "tslint": "5.9.1",
     "tslint-eslint-rules": "4.1.1",
     "typescript": "2.6.2",
-    "webpack": "3",
+    "webpack": "3.10.0",
     "webpack-beep-plugin": "1.0.0"
   }
 }
