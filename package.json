@@ -49,7 +49,7 @@
     "@types/lodash": "4.14.99",
     "@uirouter/core": "5.0.16",
     "@uirouter/publish-scripts": "2.2.10",
-    "jasmine-core": "2.9.1",
+    "jasmine-core": "2.99.0",
     "karma": "2.0.0",
     "karma-chrome-launcher": "~2.2.0",
     "karma-coverage": "1.1.1",
