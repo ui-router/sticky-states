@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@types/jasmine": "2.8.6",
-    "@types/lodash": "4.14.101",
+    "@types/lodash": "4.14.102",
     "@uirouter/core": "5.0.16",
     "@uirouter/publish-scripts": "2.2.10",
     "jasmine-core": "3.0.0",
