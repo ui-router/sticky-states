@@ -1,6 +1,5 @@
 // Karma configuration file
 var karma = require('karma');
-var BeepPlugin = require('webpack-beep-plugin');
 
 module.exports = function (karma) {
   var config = {
@@ -22,7 +21,7 @@ module.exports = function (karma) {
 
     // Start these browsers, currently available:
     // Chrome, ChromeCanary, Firefox, Opera, Safari, PhantomJS
-    browsers: ['PhantomJS'],
+    browsers: ['ChromeHeadless'],
 
     frameworks: ['jasmine'],
 
@@ -30,21 +29,19 @@ module.exports = function (karma) {
       require('karma-webpack'),
       require('karma-sourcemap-loader'),
       require('karma-jasmine'),
-      require('karma-phantomjs-launcher'),
       require('karma-chrome-launcher')
     ],
 
     webpack: {
+      mode: 'development',
       devtool: 'inline-source-map',
-
-      plugins: [ new BeepPlugin() ],
 
       resolve: {
         extensions: ['.js', '.ts']
       },
 
       module: {
-        loaders: [
+        rules: [
           { test: /\.ts$/, loader: "ts-loader?configFile=test/tsconfig.json" }
         ]
       },
