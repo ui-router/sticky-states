@@ -20,7 +20,7 @@ matrix:
   - env: CORE_BRANCH=
 notifications:
   slack:
-    on_success: change
+    on_success: never
     rooms:
       secure: mthnTDooLMpZxdrwiVOzTwAclJXweZHYmIywUYmGVKV5jztElMZnSXvO+iN4FIu6weQSZ4iXI9S3N3CyX5L2EU7Yykyiixxe/0fxNM/W+X3nFKrWq4a1YrB6KHQHE1vFUx/RUTad6zH8bl1Aw3QLlxMXYCZ/sOlqk78CCXdX+6yr7yZ6UqiCWA6h0F24ZT6W4tProCoc4UuyD+NpRJHEsnOahTz7uEiPybzSSyjNCpo6MlXNXa2b1szTx+4s+1oKRhyVHYIvNY0P6QS15+i/ZXaRp+fFEz0jZNadUyKM3mihVYiiWv4ewSJRmhEyMyiD+fQYm1+ttinrBRuIf60NMaKDeaxer41pC2bOhdNkhrrugVXjjL5hv2u1JyzZP7VAtau77paCBDSXwXFUUoboV87C97Rp92/VkcM7jV0d7PtrltmWYPGiPTIReOnrwlsuvbJkDCj05QkF2sf3lkgShBiMpE/XaH/63YUvB8NuQyR5awPlR6XamnAW52uH9iVKx5Lg6Np5hCu2WxMME/qf5K2IfCjaHcLU91lMT/8eo+o6bYgrJs3BXQN7YFkmmZeYmbVXO1o83L0Xlcgf2WWy3nzIRI/v1xyIrGoIFBs/cIWAKB/4Am5hRYzUel9vgInTq//Se0mKMQgbNLkGaFHw4mI220Qz8O0fhs5bUdDfQRs=
 sudo: false
