@@ -54,7 +54,7 @@
     "karma-chrome-launcher": "2.2.0",
     "karma-jasmine": "1.1.1",
     "karma-sourcemap-loader": "0.3.7",
-    "karma-webpack": "2.0.13",
+    "karma-webpack": "3.0.0",
     "lodash": "4.17.5",
     "npm-run-all": "4.1.2",
     "rollup": "0.56.5",
