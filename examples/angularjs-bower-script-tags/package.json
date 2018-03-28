@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "bower install",
+    "test": "cypress-runner run --path .",
+    "test:open": "cypress-runner open --path .",
     "start": "lite-server"
   },
   "author": "",
@@ -14,6 +16,7 @@
     "lite-server": "^2.3.0"
   },
   "dependencies": {
+    "@uirouter/cypress-runner": "^1.0.2",
     "@uirouter/sticky-states": "^1.4.1",
     "@uirouter/visualizer": "^5.1.3"
   }

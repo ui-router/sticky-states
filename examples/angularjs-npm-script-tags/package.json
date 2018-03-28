@@ -4,12 +4,14 @@
   "description": "AngularJS/bower sticky states example",
   "main": "index.js",
   "scripts": {
+    "test": "cypress-runner run --path dist",
+    "test:open": "cypress-runner open --path dist",
     "start": "lite-server"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "lite-server": "^2.3.0"
+    "@uirouter/cypress-runner": "^1.0.2"
   },
   "dependencies": {
     "@uirouter/angularjs": "^1.0.13",

@@ -10,12 +10,14 @@
     "react-dom": "^16.2.0"
   },
   "devDependencies": {
+    "@uirouter/cypress-runner": "^1.0.2",
     "react-scripts": "1.0.17"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "npm run build && cypress-runner run --path build",
+    "test:open": "npm run build && cypress-runner open --path build",
     "eject": "react-scripts eject"
   }
 }

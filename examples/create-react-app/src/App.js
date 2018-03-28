@@ -14,13 +14,13 @@ const plugins = [
 ]
 
 const states = [
-  { 
+  {
     name: 'home',
     url: '/home',
     sticky: true,
     views: {
       home: { component: GenericCmp },
-    }, 
+    },
   },
 
   {
@@ -31,7 +31,7 @@ const states = [
       about: { component: GenericCmp },
     },
   },
-]; 
+];
 
 class App extends Component {
   constructor(props) {
@@ -42,12 +42,13 @@ class App extends Component {
   }
 
   routerConfig(router) {
+    router.urlService.rules.initial({ state: 'home'});
     this.unsub = router.transitionService.onSuccess({}, (transition) => {
       this.setState({ currentRouterState: transition.to().name })
       console.log(transition)
     })
   }
-  
+
   componentWillUnmount() {
     this.unsub && this.unsub();
   }
@@ -69,11 +70,11 @@ class App extends Component {
             <UISref to="about"><a>about</a></UISref>
           </UISrefActive>
 
-          <div style={showHideStyle('home')}>
+          <div style={showHideStyle('home')} id="home">
             <UIView name="home"/>
           </div>
 
-          <div style={showHideStyle('about')}>
+          <div style={showHideStyle('about')} id="about">
             <UIView name="about"/>
           </div>
         </div>
