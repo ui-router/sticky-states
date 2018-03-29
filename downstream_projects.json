@@ -1,7 +1,5 @@
 {
   "angular-cli": "./examples/angular-cli",
-  "angularjs-bower-script-tags": "./examples/angularjs-bower-script-tags",
-  "angularjs-npm-script-tags": "./examples/angularjs-npm-script-tags",
   "angularjs-webpack": "./examples/angularjs-webpack",
   "create-react-app": "./examples/create-react-app"
 }
