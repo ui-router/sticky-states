@@ -5,7 +5,7 @@ class GenericCmp extends Component {
     super(props);
     this.state = {
       text: "Text entered here is not lost",
-      stateName: props.resolves.$state$.name,
+      stateName: props.$state$.name,
     }
   }
 
@@ -17,8 +17,8 @@ class GenericCmp extends Component {
     return (
       <div>
         <h1>{this.state.stateName} state loaded</h1>
-        <textarea 
-          value={this.state.text} 
+        <textarea
+          value={this.state.text}
           onChange={(input) => this.setState({ text: input.target.value })}
         />
       </div>
