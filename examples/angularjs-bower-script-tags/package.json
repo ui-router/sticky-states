@@ -1,5 +1,5 @@
 {
-  "name": "angularjs-bower",
+  "name": "angularjs-bower-script-tags",
   "version": "1.0.0",
   "description": "AngularJS/bower sticky states example",
   "main": "index.js",
