@@ -7,7 +7,7 @@
     "build": "npm run clean && tsc && tsc -m es6 -outDir lib-esm && npm run bundle",
     "bundle": "rollup -c",
     "test": "karma start",
-    "test:downstream": "npm run build && test_downstream_projects",
+    "test:downstream": "npm run build && test_downstream_projects --workspace",
     "watch": "run-p watch:*",
     "watch:buildjs": "tsc -w",
     "watch:test": "karma start --singleRun=false --autoWatch=true --autoWatchInterval=1",
@@ -49,7 +49,7 @@
     "@types/jasmine": "2.8.6",
     "@types/lodash": "4.14.106",
     "@uirouter/core": "5.0.17",
-    "@uirouter/publish-scripts": "2.3.1",
+    "@uirouter/publish-scripts": "2.3.2",
     "jasmine-core": "3.1.0",
     "karma": "2.0.0",
     "karma-chrome-launcher": "2.2.0",
@@ -69,7 +69,7 @@
     "tslint": "5.9.1",
     "tslint-eslint-rules": "5.1.0",
     "typescript": "2.8.1",
-    "webpack": "4.3.0"
+    "webpack": "4.4.1"
   },
   "dependencies": {}
 }
