@@ -1,9 +1,9 @@
-import {StateOrName, Transition, TransitionOptions, UIRouter} from '@uirouter/core';
+import { StateOrName, Transition, TransitionOptions, UIRouter } from '@uirouter/core';
 
 var tLog, tExpected;
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
-var TransitionAudit = function () {
+var TransitionAudit = function() {
   this.entered = [];
   this.exited = [];
   this.reactivated = [];
@@ -25,37 +25,41 @@ var TransitionAudit = function () {
 };
 
 // Add callbacks to each
-export function addCallbacks (basicStates) {
-  basicStates.forEach(function (state) {
+export function addCallbacks(basicStates) {
+  basicStates.forEach(function(state) {
     function deregisterView(state, cause) {
       var views = _.keys(state.$$state().views);
       tLog.views = _.difference(tLog.views, views);
-//      console.log(cause + ":Deregistered Inactive view " + views + " for state " + state.name + ": ", tLog.views);
+      //      console.log(cause + ":Deregistered Inactive view " + views + " for state " + state.name + ": ", tLog.views);
     }
     function registerView(state, cause) {
       var views = _.keys(state.$$state().views);
       tLog.views = _.union(tLog.views, views);
-//      console.log(cause  + ":  Registered Inactive view " + views + " for state " + state.name + ": ", tLog.views);
+      //      console.log(cause  + ":  Registered Inactive view " + views + " for state " + state.name + ": ", tLog.views);
     }
 
-    state.onInactivate = function () {
-      tLog.inactivated.push(state.name); registerView(state,  'Inactivate');
+    state.onInactivate = function() {
+      tLog.inactivated.push(state.name);
+      registerView(state, 'Inactivate');
     };
-    state.onReactivate = function () {
-      tLog.reactivated.push(state.name); deregisterView(state,'Reactivate');
+    state.onReactivate = function() {
+      tLog.reactivated.push(state.name);
+      deregisterView(state, 'Reactivate');
     };
-    state.onEnter = function () {
-      tLog.entered.push(state.name);     deregisterView(state,'Enter     ');
+    state.onEnter = function() {
+      tLog.entered.push(state.name);
+      deregisterView(state, 'Enter     ');
     };
-    state.onExit = function () {
-      tLog.exited.push(state.name);      deregisterView(state,'Exit      ');
+    state.onExit = function() {
+      tLog.exited.push(state.name);
+      deregisterView(state, 'Exit      ');
     };
   });
 }
 
 export function pathFrom(start, end) {
-  var startNodes = start.split(".");
-  var endNodes = end.split(".");
+  var startNodes = start.split('.');
+  var endNodes = end.split('.');
   var reverse = startNodes.length > endNodes.length;
   if (reverse) {
     var tmp = startNodes;
@@ -67,9 +71,9 @@ export function pathFrom(start, end) {
   var difference = _.difference(endNodes, startNodes);
   difference.splice(0, 0, common.pop());
 
-  var name = common.join(".");
+  var name = common.join('.');
   var path = _.map(difference, function(segment) {
-    name = (name ? name + "." : "") + segment;
+    name = (name ? name + '.' : '') + segment;
     return name;
   });
   if (reverse) path.reverse();
@@ -82,65 +86,64 @@ export interface TAdditional {
   exited?: string | string[];
 }
 
-export type TOptions = TransitionOptions & { redirect?: any, params?: any };
+export type TOptions = TransitionOptions & { redirect?: any; params?: any };
 
 export function getTestGoFn($uiRouter: UIRouter) {
   if (!$uiRouter) return null;
   var $state = $uiRouter.stateService;
 
-/**
- * This test function does the following:
- * - Go to a state `state`.
- * - Flush transition
- * - Expect the current state to be the target state, or the expected redirect state
- * - analyse the transition log and expect
- *   - The entered states to match tAdditional.entered
- *   - The exited states to match tAdditional.exited
- *   - The inactivated states to match tAdditional.inactivated
- *   - The reactivated states to match tAdditional.reactivated
- * - Expect the active+inactive states to match the active+inactive views
- *
- * @param state: The target state
- * @param tAdditional: An object with the expected transitions
- *    {
- *      entered:      statename or [ statenamearray ],
- *      exited:       statename or [ statenamearray ],
- *      inactivated:  statename or [ statenamearray ],
- *      reactivated:  statename or [ statenamearray ]
- *    }
- *    note: statenamearray may be built using the pathFrom helper function
- * @param options: options which modify the expected transition behavior
- *    { redirect: redirectstatename }
- */
-async function testGo(state: string, tAdditional?: TAdditional, options?: TOptions): Promise<Transition> {
-  if (tAdditional && Array.isArray(tAdditional.inactivated)) tAdditional.inactivated.reverse();
-  if (tAdditional && Array.isArray(tAdditional.exited)) tAdditional.exited.reverse();
+  /**
+   * This test function does the following:
+   * - Go to a state `state`.
+   * - Flush transition
+   * - Expect the current state to be the target state, or the expected redirect state
+   * - analyse the transition log and expect
+   *   - The entered states to match tAdditional.entered
+   *   - The exited states to match tAdditional.exited
+   *   - The inactivated states to match tAdditional.inactivated
+   *   - The reactivated states to match tAdditional.reactivated
+   * - Expect the active+inactive states to match the active+inactive views
+   *
+   * @param state: The target state
+   * @param tAdditional: An object with the expected transitions
+   *    {
+   *      entered:      statename or [ statenamearray ],
+   *      exited:       statename or [ statenamearray ],
+   *      inactivated:  statename or [ statenamearray ],
+   *      reactivated:  statename or [ statenamearray ]
+   *    }
+   *    note: statenamearray may be built using the pathFrom helper function
+   * @param options: options which modify the expected transition behavior
+   *    { redirect: redirectstatename }
+   */
+  async function testGo(state: string, tAdditional?: TAdditional, options?: TOptions): Promise<Transition> {
+    if (tAdditional && Array.isArray(tAdditional.inactivated)) tAdditional.inactivated.reverse();
+    if (tAdditional && Array.isArray(tAdditional.exited)) tAdditional.exited.reverse();
 
-  const goPromise = $state.go(state, options && options.params, options);
-  await goPromise;
+    const goPromise = $state.go(state, options && options.params, options);
+    await goPromise;
 
-  const expectRedirect = options && options.redirect;
-  if (!expectRedirect)
-    expect($state.current.name).toBe(state);
-  else
-    expect($state.current.name).toBe(expectRedirect);
+    const expectRedirect = options && options.redirect;
+    if (!expectRedirect) expect($state.current.name).toBe(state);
+    else expect($state.current.name).toBe(expectRedirect);
 
-  if (tExpected && tAdditional) {
-    // append all arrays in tAdditional to arrays in tExpected
-    Object.keys(tAdditional).forEach(key =>
-        tExpected[key] = tExpected[key].concat(tAdditional[key]));
+    if (tExpected && tAdditional) {
+      // append all arrays in tAdditional to arrays in tExpected
+      Object.keys(tAdditional).forEach(key => (tExpected[key] = tExpected[key].concat(tAdditional[key])));
 
-    Object.keys(tLog).filter(x => x !== 'views').forEach(key => {
-      var left = key + ": " + JSON.stringify(tLog[key]);
-      var right = key + ": " + JSON.stringify(tExpected[key]);
-      expect(left).toBe(right);
-    });
+      Object.keys(tLog)
+        .filter(x => x !== 'views')
+        .forEach(key => {
+          var left = key + ': ' + JSON.stringify(tLog[key]);
+          var right = key + ': ' + JSON.stringify(tExpected[key]);
+          expect(left).toBe(right);
+        });
+    }
+
+    return goPromise.transition;
   }
 
-  return goPromise.transition;
-}
-
-return testGo;
+  return testGo;
 }
 
 export function resetTransitionLog() {
@@ -151,5 +154,4 @@ export function resetTransitionLog() {
 export const tlog = () => tLog;
 
 export const equalityTester = (first, second) =>
-    Object.keys(second).reduce((acc, key) =>
-    first[key] == second[key] && acc, true);
+  Object.keys(second).reduce((acc, key) => first[key] == second[key] && acc, true);

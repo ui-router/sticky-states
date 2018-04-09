@@ -1,1 +1,1 @@
-export * from "./stickyStates";
+export * from './stickyStates';
