@@ -4,23 +4,16 @@ before_install:
 - sh -e /etc/init.d/xvfb start
 - export PATH=$HOME/.yarn/bin:$PATH
 - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.5.1
-- yarn global add greenkeeper-lockfile@1 yalc
-before_script: greenkeeper-lockfile-update && greenkeeper-lockfile-upload
 script:
 - if [ "x${CORE_BRANCH}x" != "xx" ] ; then ./node_modules/.bin/publish_yalc_package
   .downstream_cache/core https://github.com/ui-router/core.git && yalc add @uirouter/core
   ; fi
-- yarn test && yarn test:downstream
+- yarn test
+- yarn test:downstream
 env:
-  global:
-    secure: xvwhUuPr1kVLdrUbxP1zSBNlRa283C1L1o97mtjrpRsoss13R8t5L80wIYzKtJ9gqXO+Q49Dnk1jcO/GFcsiANBSR0/z59TaU2WjfcESSFCwiPvSfggRGVetKGIlfUZFtkULz5sWoRDgSlAeY5SW9jEfCEXhcLR8UtS7tfB3dTC7TqSeEPV+hypFEfavjz8a8SOSLqfYvmolsTFTzKtFSmK9WPjGJCRTx1n5OpPlx5I5UCd3FqzgDjDBIKtg1Cx7vZB7tg0X9aN+n/ZJUHl1kmbyzwlhsRQP5KNPhH/puLS5HmjLt807A0c8VhdaKrUwEJ0gr2W8snJU8ICd8t6kcsJcZtOcc/+DHe4PTD/ksbOnuMv0YJoqDSklRHdxFtwvksuINK0tJEyG7rcMY5kebb08gdco6LGlac+NzHim6qIqhHe2PxYmDwFC8fKP0QtPVLPOIM0M77dE6/Zu8pr+hmvhj433VWwBwaYxKgr8vtohoBiOiVsok16vYXtow/JleDDjqGe9SYIXhTjTprDP9Enp8nhwbcmgLrexNPc1WtCm64bgX03M3HxRr5VqgO8daHiasMrL5vBiFoyx+AZz9KRjFh9VQsBH6k+23WP2JCd9JAxzHzlz37Lgdd8xdPT8FKkk3uSqIUC80Wdb/596Qu44KA2J5mNTqXFIYwbtMz4=
   matrix:
   - CORE_BRANCH=
   - CORE_BRANCH=master
-matrix:
-  fast_finish: true
-  allow_failures:
-  - env: CORE_BRANCH=
 notifications:
   slack:
     on_success: never
