@@ -72,7 +72,7 @@
     "ts-loader": "4.2.0",
     "tslint": "5.9.1",
     "tslint-eslint-rules": "5.1.0",
-    "typescript": "2.8.1",
+    "typescript": "2.8.3",
     "webpack": "4.4.1"
   },
   "dependencies": {}
