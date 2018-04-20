@@ -6,6 +6,7 @@ node_modules
 bower_components
 lib
 lib-esm
+yarn-error.log
 
 # webstorm files
 idea-out
