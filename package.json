@@ -50,7 +50,7 @@
     "@types/jasmine": "2.8.6",
     "@types/lodash": "4.14.108",
     "@uirouter/core": "5.0.17",
-    "@uirouter/publish-scripts": "2.3.11",
+    "@uirouter/publish-scripts": "2.3.12",
     "husky": "^0.14.3",
     "jasmine-core": "3.1.0",
     "karma": "2.0.2",
