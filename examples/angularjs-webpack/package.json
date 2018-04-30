@@ -18,7 +18,7 @@
     "angular": "^1.6.8"
   },
   "devDependencies": {
-    "@uirouter/cypress-runner": "^1.0.2",
+    "@uirouter/cypress-runner": "^1.0.7",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "webpack": "^3.10.0",

@@ -10,7 +10,7 @@
     "react-dom": "^16.2.0"
   },
   "devDependencies": {
-    "@uirouter/cypress-runner": "^1.0.2",
+    "@uirouter/cypress-runner": "^1.0.7",
     "react-scripts": "1.1.1"
   },
   "scripts": {
