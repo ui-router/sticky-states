@@ -47,7 +47,7 @@
     "@uirouter/core": "^5.0.1"
   },
   "devDependencies": {
-    "@types/jasmine": "2.8.6",
+    "@types/jasmine": "2.8.7",
     "@types/lodash": "4.14.108",
     "@uirouter/core": "5.0.18",
     "@uirouter/publish-scripts": "2.3.12",
