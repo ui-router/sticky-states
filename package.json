@@ -71,7 +71,7 @@
     "tslint": "5.10.0",
     "tslint-eslint-rules": "5.2.0",
     "typescript": "2.8.3",
-    "webpack": "4.8.1"
+    "webpack": "4.8.3"
   },
   "dependencies": {}
 }
