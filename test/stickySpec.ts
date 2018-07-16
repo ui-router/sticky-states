@@ -15,7 +15,7 @@ import {
 } from '@uirouter/core';
 import '../src/stickyStates';
 import { StickyStatesPlugin } from '../src/stickyStates';
-import { memoryLocationPlugin, servicesPlugin } from '@uirouter/core/lib/vanilla';
+import { memoryLocationPlugin, servicesPlugin } from '@uirouter/core';
 
 let router: UIRouter;
 let $state: StateService;
@@ -49,7 +49,7 @@ describe('stickyState', function() {
       if (isObject(state.views)) {
         return Object.keys(state.views).map(
           key => ({ $name: key, $uiViewName: key, $uiViewContextAnchor: state.name, $type: 'core', $context: state }),
-          [],
+          []
         );
       }
 
@@ -372,7 +372,7 @@ describe('stickyState', function() {
       await testGo(
         'typedparam2',
         { inactivated: 'A', reactivated: 'typedparam2' },
-        { params: { jsonparam: { foo: 'bar' } } },
+        { params: { jsonparam: { foo: 'bar' } } }
       );
 
       done();
@@ -402,7 +402,7 @@ describe('stickyState', function() {
       await testGo(
         'main.product.something',
         { reactivated: ['main.product', 'main.product.something'], inactivated: 'main.other' },
-        options,
+        options
       );
       await testGo('main.other', {
         reactivated: 'main.other',
@@ -419,7 +419,7 @@ describe('stickyState', function() {
           entered: ['main.product', 'main.product.something'],
           inactivated: 'main.other',
         },
-        options,
+        options
       );
 
       done();
@@ -448,7 +448,7 @@ describe('stickyState', function() {
       await testGo(
         'A._1.__1',
         { inactivated: pathFrom('A._2', 'A._2.__2'), reactivated: pathFrom('A._1', 'A._1.__1') },
-        { redirect: 'A._1.__1' },
+        { redirect: 'A._1.__1' }
       );
 
       done();
@@ -620,7 +620,7 @@ describe('stickyState', function() {
           exited: ['A._2.__1'],
           entered: ['A._2.__1'],
         },
-        { reload: 'A._2.__1' },
+        { reload: 'A._2.__1' }
       );
       await testGo('A._2.__1', { exited: ['A._2.__1'], entered: ['A._2.__1'] }, { reload: 'A._2.__1' });
 
@@ -633,7 +633,7 @@ describe('stickyState', function() {
       await testGo(
         'B._1.__1',
         { exited: ['B', 'B._1', 'B._1.__1'], entered: ['B', 'B._1', 'B._1.__1'] },
-        { reload: true },
+        { reload: true }
       );
 
       done();
@@ -936,7 +936,7 @@ describe('stickyState', function() {
       const transition = await testGo(
         'stateB',
         { exited: 'stateA', reactivated: 'stateB' },
-        { params: { paramB: '2' } },
+        { params: { paramB: '2' } }
       );
       const tc = transition.treeChanges();
 
