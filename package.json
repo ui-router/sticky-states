@@ -50,7 +50,7 @@
     "@types/jasmine": "2.8.8",
     "@types/lodash": "4.14.112",
     "@uirouter/core": "^5.0.19",
-    "@uirouter/publish-scripts": "^2.3.16",
+    "@uirouter/publish-scripts": "^2.3.20",
     "husky": "^0.14.3",
     "jasmine-core": "^3.1.0",
     "karma": "^2.0.2",
@@ -63,15 +63,15 @@
     "lodash": "^4.17.10",
     "prettier": "^1.11.1",
     "pretty-quick": "^1.4.1",
-    "rollup": "^0.62.0",
+    "rollup": "^0.63.0",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-uglify": "^3.0.0",
     "ts-loader": "^4.3.0",
-    "tslint": "^5.10.0",
+    "tslint": "^5.11.0",
     "tslint-eslint-rules": "^5.2.0",
     "typescript": "^2.8.3",
-    "webpack": "^4.8.1"
+    "webpack": "^4.16.1"
   },
   "dependencies": {}
 }
