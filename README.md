@@ -84,8 +84,8 @@ return <UIRouterReact config={routerConfig}/>;
 
 ### 2) Mark a state as sticky
 
-The sticky state's view **must target a named ui-view**.
-The named `ui-view` **must not be shared by other states**.
+The sticky state's view **must target a named `ui-view`**.
+The named `ui-view` **must not be shared with other states**.
 
 Create and target a named ui-view.
 
