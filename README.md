@@ -118,6 +118,8 @@ In some cases, `ui-sref-active` may also be used to toggle a class on the named 
 These minimal examples show how to get started with sticky states in:
 
 - [AngularJS](https://stackblitz.com/edit/ui-router-angularjs-sticky-states?file=app.js)
+- [Angular](https://stackblitz.com/edit/ui-router-angular-sticky-states?file=app/app.module.ts)
+- [React](https://stackblitz.com/edit/ui-router-react-sticky-states?file=index.js)
 
 ## More
 
