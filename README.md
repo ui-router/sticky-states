@@ -41,7 +41,7 @@ Run `npm ls` to check the version of `ui-router-core` included with the UI-Route
 In Angular 1, register a plugin by injecting `$uiRouterProvider` in a `config()` block.
 
 ```js
-import {StickyStatesPlugin} from "ui-router-sticky-states";
+import {StickyStatesPlugin} from "@uirouter/sticky-states";
 
 angular.module('myapp', ['ui.router']).config(function($uiRouterProvider) {
   $uiRouterProvider.plugin(StickyStatesPlugin);
@@ -53,7 +53,7 @@ angular.module('myapp', ['ui.router']).config(function($uiRouterProvider) {
 In Angular 2, register a plugin in your `UIRouterConfig` class
 
 ```js
-import {StickyStatesPlugin} from "ui-router-sticky-states";
+import {StickyStatesPlugin} from "@uirouter/sticky-states";
 
 export class MyConfig {
   configure(uiRouter: UIRouter) {
@@ -67,7 +67,7 @@ export class MyConfig {
 In React, register a plugin after creating your `UIRouterReact` instance.
 
 ```js
-import {StickyStatesPlugin} from "ui-router-sticky-states";
+import {StickyStatesPlugin} from "@uirouter/sticky-states";
 
 let router = new UIRouterReact();
 router.plugin(StickyStatesPlugin);
@@ -112,7 +112,14 @@ This can be achieved using [`StateService.includes`](https://ui-router.github.io
 
 In some cases, `ui-sref-active` may also be used to toggle a class on the named `ui-view`.
 
-#### More
+
+## Example
+
+These minimal examples show how to get started with sticky states in:
+
+- [AngularJS](https://stackblitz.com/edit/ui-router-angularjs-sticky-states?file=app.js)
+
+## More
 
 This project was ported from the [UI-Router Extras project](//christopherthielen.github.io/ui-router-extras/) for legacy UI-Router.
 For more information, see the ui-router extras documentation: http://christopherthielen.github.io/ui-router-extras/#/sticky
