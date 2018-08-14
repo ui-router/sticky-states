@@ -53,7 +53,7 @@
     "@uirouter/publish-scripts": "^2.3.20",
     "husky": "^0.14.3",
     "jasmine-core": "^3.1.0",
-    "karma": "^2.0.2",
+    "karma": "^3.0.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^1.1.2",
     "karma-mocha-reporter": "^2.2.5",
