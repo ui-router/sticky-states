@@ -51,7 +51,7 @@
     "@types/lodash": "4.14.112",
     "@uirouter/core": "^5.0.19",
     "@uirouter/publish-scripts": "^2.3.20",
-    "husky": "^0.14.3",
+    "husky": "^1.1.2",
     "jasmine-core": "^3.1.0",
     "karma": "^3.0.0",
     "karma-chrome-launcher": "^2.2.0",
