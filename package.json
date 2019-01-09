@@ -7,7 +7,7 @@
     "build": "npm run clean && tsc && tsc -m es6 -outDir lib-esm && npm run bundle",
     "bundle": "rollup -c",
     "test": "karma start",
-    "test:downstream": "npm run build && test_downstream_projects --workspace",
+    "test:downstream": "npm run build && test_downstream_projects",
     "watch": "run-p watch:*",
     "watch:buildjs": "tsc -w",
     "watch:test": "karma start --singleRun=false --autoWatch=true --autoWatchInterval=1",
