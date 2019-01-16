@@ -125,7 +125,7 @@ const applyParamsFromPath = (path: PathNode[], dest: PathNode) => {
     throw new Error(
       `Could not find matching node for ${dest.state.name} in source path [${path
         .map(node => node.state.name)
-        .join(', ')}]`,
+        .join(', ')}]`
     );
   return extend(cloneNode(dest), { paramValues: sourceNode.paramValues });
 };
@@ -174,7 +174,7 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
       trans => {
         trans['_treeChanges'] = this._calculateStickyTreeChanges(trans);
       },
-      { priority: 100 },
+      { priority: 100 }
     );
   }
 
@@ -194,12 +194,12 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
   private _addStateCallbacks() {
     const inactivateCriteria = { inactivating: state => !!state.onInactivate };
     this.router.transitionService.onInactivate(inactivateCriteria, (trans: Transition, state: StateDeclaration) =>
-      state.onInactivate(trans, state),
+      state.onInactivate(trans, state)
     );
 
     const reactivateCriteria = { reactivating: state => !!state.onReactivate };
     this.router.transitionService.onReactivate(reactivateCriteria, (trans: Transition, state: StateDeclaration) =>
-      state.onReactivate(trans, state),
+      state.onReactivate(trans, state)
     );
   }
 
@@ -367,7 +367,7 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
       {
         inherit: true,
         exitSticky: states,
-      },
+      }
     );
   }
 }

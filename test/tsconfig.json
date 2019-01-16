@@ -5,7 +5,7 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "target": "es5",
-    "lib": [ "es6", "dom" ],
+    "lib": ["es6", "dom"],
     "allowSyntheticDefaultImports": true,
     "outDir": "../.lib-test",
     "declaration": true,
