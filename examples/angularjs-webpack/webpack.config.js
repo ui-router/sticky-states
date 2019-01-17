@@ -1,9 +1,11 @@
+var path = require('path');
 module.exports = {
-  entry: "./index.js",
+  entry: './index.js',
   output: {
-    filename: "bundle.js",
+    filename: 'bundle.js',
+    path: path.resolve(__dirname),
   },
   module: {
-    loaders: [ { test: /\.js?$/, loader: "babel-loader", } ]
+    rules: [{ test: /\.js?$/, loader: 'babel-loader' }],
   },
 };
