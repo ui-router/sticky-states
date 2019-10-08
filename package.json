@@ -43,7 +43,7 @@
   "typings": "lib/index.d.ts",
   "license": "MIT",
   "peerDependencies": {
-    "@uirouter/core": "^5.0.1"
+    "@uirouter/core": ">=5.0.1"
   },
   "devDependencies": {
     "@types/jasmine": "3.4.0",
