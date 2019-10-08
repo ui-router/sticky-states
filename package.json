@@ -1,7 +1,7 @@
 {
   "name": "@uirouter/sticky-states",
   "description": "UI-Router Sticky States: Keep states and their components alive while a different state is activated",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "scripts": {
     "clean": "shx rm -rf lib lib-esm _bundles",
     "build": "npm run clean && tsc && tsc -m es6 -outDir lib-esm && npm run bundle",
