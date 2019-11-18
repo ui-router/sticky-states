@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@types/jasmine": "3.4.0",
-    "@types/lodash": "4.14.138",
+    "@types/lodash": "4.14.148",
     "@uirouter/core": "^5.0.22",
     "@uirouter/publish-scripts": "^2.3.37",
     "husky": "^3.0.0",
