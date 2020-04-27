@@ -60,7 +60,7 @@
     "karma-super-dots-reporter": "^0.2.0",
     "karma-webpack": "^4.0.2",
     "lodash": "^4.17.10",
-    "prettier": "^1.11.1",
+    "prettier": "^2.0.5",
     "pretty-quick": "^1.8.1",
     "rollup": "^1.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
