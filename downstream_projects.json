@@ -1,5 +1,11 @@
 {
-  "angular-cli": "./examples/angular-cli",
-  "angularjs-webpack": "./examples/angularjs-webpack",
-  "create-react-app": "./examples/create-react-app"
+  "angular": {
+    "angular-cli": "./examples/angular-cli"
+  },
+  "angularjs": {
+    "angularjs-webpack": "./examples/angularjs-webpack"
+  },
+  "react": {
+    "create-react-app": "./examples/create-react-app"
+  }
 }
