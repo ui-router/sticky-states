@@ -46,33 +46,36 @@
     "@uirouter/core": ">=5.0.1"
   },
   "devDependencies": {
-    "@types/jasmine": "3.4.0",
-    "@types/lodash": "4.14.138",
-    "@uirouter/core": "^5.0.22",
+    "@types/jasmine": "3.5.10",
+    "@types/lodash": "4.14.150",
+    "@uirouter/core": "^6.0.5",
     "@uirouter/publish-scripts": "^2.3.42",
-    "husky": "^3.0.0",
+    "husky": "^4.2.5",
     "jasmine-core": "^3.1.0",
-    "karma": "^4.0.0",
+    "karma": "^5.0.2",
     "karma-chrome-launcher": "^3.1.0",
-    "karma-jasmine": "^2.0.1",
+    "karma-jasmine": "^3.1.1",
     "karma-mocha-reporter": "^2.2.5",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-super-dots-reporter": "^0.2.0",
     "karma-webpack": "^4.0.2",
     "lodash": "^4.17.10",
-    "prettier": "^1.11.1",
-    "pretty-quick": "^1.8.1",
-    "rollup": "^1.1.0",
+    "prettier": "^2.0.5",
+    "pretty-quick": "^2.0.1",
+    "rollup": "^2.7.5",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-sourcemaps": "^0.5.0",
     "rollup-plugin-uglify": "^6.0.1",
-    "ts-loader": "^6.0.4",
-    "tslint": "^5.12.1",
+    "ts-loader": "^7.0.1",
+    "tslint": "^6.1.2",
     "tslint-eslint-rules": "^5.2.0",
     "typescript": "^3.2.2",
-    "webpack": "^4.28.4"
+    "webpack": "^4.43.0"
   },
   "dependencies": {},
+  "resolutions": {
+    "chokidar": "^3.0.0"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
