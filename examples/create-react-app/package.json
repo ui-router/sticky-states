@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@uirouter/react": "^0.6.2",
+    "@uirouter/react": "^1.0.3",
     "@uirouter/sticky-states": "^1.4.1",
-    "@uirouter/visualizer": "^6.0.0",
+    "@uirouter/visualizer": "^7.0.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0"
   },
   "devDependencies": {
     "@uirouter/cypress-runner": "^1.0.7",
-    "react-scripts": "1.1.1"
+    "react-scripts": "3.4.1"
   },
   "scripts": {
     "start": "react-scripts start",
