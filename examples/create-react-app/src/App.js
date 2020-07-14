@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { UIRouter, UISref, UISrefActive, UIView } from '@uirouter/react';
+import { UIRouter, useSrefActive, UIView } from '@uirouter/react';
 import { pushStateLocationPlugin } from '@uirouter/core';
 import { Visualizer } from '@uirouter/visualizer';
 import { StickyStatesPlugin } from '@uirouter/sticky-states';
@@ -7,11 +7,7 @@ import { StickyStatesPlugin } from '@uirouter/sticky-states';
 import GenericCmp from './Generic';
 import './App.css';
 
-const plugins = [
-  pushStateLocationPlugin,
-  Visualizer,
-  StickyStatesPlugin,
-]
+const plugins = [pushStateLocationPlugin, Visualizer, StickyStatesPlugin];
 
 const states = [
   {
@@ -37,16 +33,16 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentState: null
-    }
+      currentState: null,
+    };
   }
 
   routerConfig(router) {
-    router.urlService.rules.initial({ state: 'home'});
+    router.urlService.rules.initial({ state: 'home' });
     this.unsub = router.transitionService.onSuccess({}, (transition) => {
-      this.setState({ currentRouterState: transition.to().name })
-      console.log(transition)
-    })
+      this.setState({ currentRouterState: transition.to().name });
+      console.log(transition);
+    });
   }
 
   componentWillUnmount() {
@@ -56,26 +52,24 @@ class App extends Component {
   render() {
     const current = this.state.currentRouterState;
     const showHideStyle = (statename) => ({
-      display: current === statename ? 'block' : 'none'
-    })
+      display: current === statename ? 'block' : 'none',
+    });
+
+    const homeSref = useSrefActive('home', null, 'active');
+    const aboutSref = useSrefActive('about', null, 'active');
 
     return (
-      <UIRouter plugins={plugins} states={states} config={router => this.routerConfig(router)}>
+      <UIRouter plugins={plugins} states={states} config={(router) => this.routerConfig(router)}>
         <div>
-          <UISrefActive class="active">
-            <UISref to="home"><a>home</a></UISref>
-          </UISrefActive>
-
-          <UISrefActive class="active">
-            <UISref to="about"><a>about</a></UISref>
-          </UISrefActive>
+          <a {...homeSref}>home</a>
+          <a {...aboutSref}>about</a>
 
           <div style={showHideStyle('home')} id="home">
-            <UIView name="home"/>
+            <UIView name="home" />
           </div>
 
           <div style={showHideStyle('about')} id="about">
-            <UIView name="about"/>
+            <UIView name="about" />
           </div>
         </div>
       </UIRouter>
