@@ -1,0 +1,42 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "07:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: y18n
+    versions:
+    - 4.0.1
+  - dependency-name: karma
+    versions:
+    - 6.0.1
+    - 6.0.3
+    - 6.1.0
+    - 6.1.1
+    - 6.2.0
+    - 6.3.1
+  - dependency-name: ts-loader
+    versions:
+    - 8.0.14
+    - 8.0.15
+    - 8.0.17
+    - 8.0.18
+    - 8.1.0
+  - dependency-name: "@types/jasmine"
+    versions:
+    - 3.6.3
+    - 3.6.4
+    - 3.6.6
+    - 3.6.7
+  - dependency-name: rollup-plugin-sourcemaps
+    versions:
+    - 0.6.3
+  - dependency-name: karma-sourcemap-loader
+    versions:
+    - 0.3.8
+  - dependency-name: elliptic
+    versions:
+    - 6.5.3
