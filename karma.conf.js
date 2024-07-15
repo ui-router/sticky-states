@@ -1,7 +1,7 @@
 // Karma configuration file
 var karma = require('karma');
 
-module.exports = function(karma) {
+module.exports = function (karma) {
   var config = {
     singleRun: true,
     autoWatch: false,
@@ -49,7 +49,16 @@ module.exports = function(karma) {
       },
 
       module: {
-        rules: [{ test: /\.ts$/, loader: 'ts-loader?configFile=test/tsconfig.json' }],
+        rules: [
+          {
+            test: /\.ts$/,
+            loader: 'ts-loader',
+            options: {
+              configFile: 'test/tsconfig.json',
+              transpileOnly: true,
+            },
+          },
+        ],
       },
     },
 

@@ -18,6 +18,14 @@ uglifyOpts.output.comments = (node, comment) => comment.type === 'comment2' && /
 
 var plugins = [nodeResolve({ jsnext: true }), sourcemaps()];
 
+const onwarn = (warning) => {
+  // Suppress this error message... https://github.com/rollup/rollup/wiki/Troubleshooting#this-is-undefined
+  const ignores = ['THIS_IS_UNDEFINED'];
+  if (!ignores.some((code) => code === warning.code)) {
+    console.error(warning.message);
+  }
+};
+
 if (MINIFY) plugins.push(uglify(uglifyOpts));
 
 var extension = MINIFY ? '.min.js' : '.js';
@@ -35,6 +43,7 @@ const CONFIG = {
   },
   external: '@uirouter/core',
   plugins: plugins,
+  onwarn: onwarn,
 };
 
 export default CONFIG;

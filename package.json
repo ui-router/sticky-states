@@ -46,20 +46,20 @@
     "@uirouter/core": ">=5.0.1"
   },
   "devDependencies": {
-    "@types/jasmine": "3.5.10",
+    "@types/jasmine": "5.1.4",
     "@types/lodash": "4.14.150",
     "@uirouter/core": "^6.0.5",
-    "@uirouter/publish-scripts": "^2.5.5",
+    "@uirouter/publish-scripts": "^2.6.3",
     "husky": "^4.2.5",
     "jasmine-core": "^3.1.0",
     "karma": "^5.0.2",
     "karma-chrome-launcher": "^3.1.0",
     "karma-jasmine": "^3.1.1",
     "karma-mocha-reporter": "^2.2.5",
-    "karma-sourcemap-loader": "^0.3.7",
+    "karma-sourcemap-loader": "^0.4.0",
     "karma-super-dots-reporter": "^0.2.0",
-    "karma-webpack": "^4.0.2",
-    "lodash": "^4.17.10",
+    "karma-webpack": "^5.0.1",
+    "lodash": "^4.17.21",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
     "rollup": "^2.7.5",
@@ -69,8 +69,8 @@
     "ts-loader": "^7.0.1",
     "tslint": "^6.1.2",
     "tslint-eslint-rules": "^5.2.0",
-    "typescript": "^3.2.2",
-    "webpack": "^4.43.0"
+    "typescript": "^5.4.5",
+    "webpack": "^5.93.0"
   },
   "dependencies": {},
   "resolutions": {
@@ -80,5 +80,6 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }
