@@ -11,7 +11,6 @@ import {
   isObject,
   ViewConfigFactory,
   ViewConfig,
-  ViewService,
 } from '@uirouter/core';
 import '../src/stickyStates';
 import { StickyStatesPlugin } from '../src/stickyStates';

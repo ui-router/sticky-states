@@ -49,23 +49,21 @@
     "@uirouter/core": ">=5.0.1"
   },
   "devDependencies": {
-    "@types/lodash": "4.14.150",
-    "@typescript/native-preview": "^7.0.0-dev.20250605.1",
-    "@uirouter/core": "^6.0.5",
+    "@types/lodash": "4.17.21",
+    "@typescript/native-preview": "^7.0.0-dev.20260103.1",
+    "@uirouter/core": "^6.1.2",
     "@uirouter/publish-scripts": "^2.7.0",
-    "husky": "^4.2.5",
+    "husky": "^9.1.7",
     "lodash": "^4.17.21",
-    "prettier": "^2.0.5",
-    "pretty-quick": "^2.0.1",
-    "rolldown": "^1.0.0-beta.8",
-    "shx": "^0.3.4",
-    "ts-loader": "^7.0.1",
-    "typescript": "^5.4.5",
+    "prettier": "^3.7.4",
+    "pretty-quick": "^4.2.2",
+    "rolldown": "^1.0.0-beta.58",
+    "shx": "^0.4.0",
+    "typescript": "^5.9.3",
     "eslint": "^9.19.0",
     "typescript-eslint": "^8.51.0",
-    "vitest": "^2.1.0"
+    "vitest": "^4.0.16"
   },
-  "dependencies": {},
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
