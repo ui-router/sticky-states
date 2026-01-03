@@ -5,14 +5,13 @@ import {
   StateService,
   StateRegistry,
   StateDeclaration,
-  ViewService,
   TransitionService,
   PathNode,
   _ViewDeclaration,
   isObject,
   ViewConfigFactory,
   ViewConfig,
-  Transition,
+  ViewService,
 } from '@uirouter/core';
 import '../src/stickyStates';
 import { StickyStatesPlugin } from '../src/stickyStates';
@@ -21,7 +20,6 @@ import { memoryLocationPlugin, servicesPlugin } from '@uirouter/core';
 let router: UIRouter;
 let $state: StateService;
 let $transitions: TransitionService;
-let $view: ViewService;
 let $registry: StateRegistry;
 let $stickyState: StickyStatesPlugin;
 let testGo = getTestGoFn(null);
@@ -43,7 +41,7 @@ describe('stickyState', function () {
     router.urlService.rules.otherwise('/');
 
     // ui-router-core doesn't have a default views builder
-    router.stateRegistry.decorator('views', function (state, parentFn) {
+    router.stateRegistry.decorator('views', function (state, _parentFn) {
       if (isObject(state.views)) {
         return Object.keys(state.views).map(
           (key) => ({ $name: key, $uiViewName: key, $uiViewContextAnchor: state.name, $type: 'core', $context: state }),
@@ -70,18 +68,14 @@ describe('stickyState', function () {
 
     $state = router.stateService;
     $transitions = router.transitionService;
-    $view = router.viewService;
     $registry = router.stateRegistry;
 
     testGo = getTestGoFn(router);
   });
 
-  let controllerInvokeCount = 0,
-    resolveCount = 0,
-    Xvalue = undefined;
+  let resolveCount = 0;
   function resetXResolve() {
-    controllerInvokeCount = resolveCount = 0;
-    Xvalue = undefined;
+    resolveCount = 0;
   }
 
   // Set up base state heirarchy
@@ -688,7 +682,7 @@ describe('stickyState', function () {
       });
 
       it('should accept a criteria obj with `inactivate` property, and a state hook fn', () => {
-        expect(() => $transitions.onInactivate({ inactivating: 'A._1' }, (trans, state) => {})).not.toThrow();
+        expect(() => $transitions.onInactivate({ inactivating: 'A._1' }, (_trans, _state) => {})).not.toThrow();
       });
 
       it('should fire a hook function when a state is inactivated', async () => {
@@ -732,7 +726,7 @@ describe('stickyState', function () {
       });
 
       it('should accept a criteria obj with `reactivate` property, and a state hook fn', () => {
-        expect(() => $transitions.onReactivate({ reactivating: 'A._1' }, (trans, state) => {})).not.toThrow();
+        expect(() => $transitions.onReactivate({ reactivating: 'A._1' }, (_trans, _state) => {})).not.toThrow();
       });
 
       it('should fire a hook function when a state is reactivated', async () => {
