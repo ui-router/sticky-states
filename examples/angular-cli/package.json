@@ -6,8 +6,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "test": "npm run build && cypress-runner run --path dist/angular-cli/browser",
-    "test:open": "npm run build && cypress-runner open --path dist/angular-cli/browser"
+    "test": "npm run build && playwright install chromium && playwright test",
+    "test:ui": "npm run build && playwright test --ui"
   },
   "private": true,
   "dependencies": {
@@ -28,7 +28,8 @@
     "@angular/build": "^20.0.0",
     "@angular/cli": "^20.0.0",
     "@angular/compiler-cli": "^20.0.0",
-    "@uirouter/cypress-runner": "^3.0.0",
+    "@playwright/test": "^1.49.0",
+    "serve": "^14.2.0",
     "typescript": "~5.8.0"
   }
 }
