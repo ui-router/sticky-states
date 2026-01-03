@@ -7,8 +7,8 @@
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "npm run build && cypress-runner run --path dist",
-    "test:open": "npm run build && cypress-runner open --path dist"
+    "test": "npm run build && playwright install chromium && playwright test",
+    "test:ui": "npm run build && playwright test --ui"
   },
   "dependencies": {
     "@uirouter/react": "^1.0.7",
@@ -18,8 +18,9 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@uirouter/cypress-runner": "^3.0.0",
+    "@playwright/test": "^1.49.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "serve": "^14.2.0",
     "vite": "^6.0.0"
   }
 }
