@@ -1,25 +1,20 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
-
-import { UIRouterModule } from '@uirouter/angular';
+import { ApplicationConfig } from '@angular/core';
 import { UIRouter } from '@uirouter/core';
+import { provideUIRouter, Ng2StateDeclaration } from '@uirouter/angular';
 import { StickyStatesPlugin } from '@uirouter/sticky-states';
 import { Visualizer } from '@uirouter/visualizer';
 
-import { AppComponent } from './app.component';
 import { GenericComponent } from './generic.component';
 
-export const states = [
-  { 
+export const states: Ng2StateDeclaration[] = [
+  {
     name: 'home',
     url: '/home',
     sticky: true,
     views: {
       home: { component: GenericComponent },
-    }, 
+    },
   },
-
   {
     name: 'about',
     url: '/about',
@@ -27,7 +22,7 @@ export const states = [
     views: {
       about: { component: GenericComponent },
     },
-  }
+  },
 ];
 
 export function configFn(router: UIRouter) {
@@ -36,18 +31,11 @@ export function configFn(router: UIRouter) {
   router.plugin(Visualizer);
 }
 
-@NgModule({
-  declarations: [
-    AppComponent, GenericComponent, 
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    UIRouterModule.forRoot({
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideUIRouter({
       states: states,
       config: configFn,
-    })
+    }),
   ],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
+};
