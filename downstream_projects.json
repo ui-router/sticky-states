@@ -6,6 +6,6 @@
     "angularjs-webpack": "./examples/angularjs-webpack"
   },
   "react": {
-    "create-react-app": "./examples/create-react-app"
+    "react-vite": "./examples/react-vite"
   }
 }

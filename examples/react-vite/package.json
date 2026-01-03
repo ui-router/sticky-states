@@ -1,0 +1,25 @@
+{
+  "name": "react-vite-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "npm run build && cypress-runner run --path dist",
+    "test:open": "npm run build && cypress-runner open --path dist"
+  },
+  "dependencies": {
+    "@uirouter/react": "^1.0.7",
+    "@uirouter/sticky-states": "^1.5.1",
+    "@uirouter/visualizer": "^7.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@uirouter/cypress-runner": "^3.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.0"
+  }
+}
