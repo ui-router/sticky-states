@@ -1,78 +1,65 @@
-import { StateOrName, Transition, TransitionOptions, UIRouter } from '@uirouter/core';
-
-var tLog, tExpected;
+import { expect } from 'vitest';
+import { TransitionOptions, UIRouter } from '@uirouter/core';
 import * as _ from 'lodash';
 
-var TransitionAudit = function() {
-  this.entered = [];
-  this.exited = [];
-  this.reactivated = [];
-  this.inactivated = [];
-  this.views = [];
+let tLog: TransitionAudit;
+let tExpected: TransitionAudit;
 
-  // this.toString = angular.bind(this,
-  //     function toString() {
-  //       var copy = {};
-  //       angular.forEach(this, function(value, key) {
-  //         if (key === 'inactivated' || key === 'reactivated' ||
-  //             key === 'entered' || key === 'exited') {
-  //           copy[key] = value;
-  //         }
-  //       });
-  //       return angular.toJson(copy);
-  //     }
-  // );
-};
+class TransitionAudit {
+  entered: string[] = [];
+  exited: string[] = [];
+  reactivated: string[] = [];
+  inactivated: string[] = [];
+  views: string[] = [];
+}
 
 // Add callbacks to each
-export function addCallbacks(basicStates) {
-  basicStates.forEach(function(state) {
-    function deregisterView(state, cause) {
-      var views = _.keys(state.$$state().views);
+export function addCallbacks(basicStates: any[]) {
+  basicStates.forEach(function (state) {
+    function deregisterView(state: any, cause: string) {
+      const views = _.keys(state.$$state().views);
       tLog.views = _.difference(tLog.views, views);
-      //      console.log(cause + ":Deregistered Inactive view " + views + " for state " + state.name + ": ", tLog.views);
     }
-    function registerView(state, cause) {
-      var views = _.keys(state.$$state().views);
+    function registerView(state: any, cause: string) {
+      const views = _.keys(state.$$state().views);
       tLog.views = _.union(tLog.views, views);
-      //      console.log(cause  + ":  Registered Inactive view " + views + " for state " + state.name + ": ", tLog.views);
     }
 
-    state.onInactivate = function() {
+    state.onInactivate = function () {
       tLog.inactivated.push(state.name);
       registerView(state, 'Inactivate');
     };
-    state.onReactivate = function() {
+    state.onReactivate = function () {
       tLog.reactivated.push(state.name);
       deregisterView(state, 'Reactivate');
     };
-    state.onEnter = function() {
+    state.onEnter = function () {
       tLog.entered.push(state.name);
       deregisterView(state, 'Enter     ');
     };
-    state.onExit = function() {
+    state.onExit = function () {
       tLog.exited.push(state.name);
       deregisterView(state, 'Exit      ');
     };
   });
 }
 
-export function pathFrom(start, end) {
-  var startNodes = start.split('.');
-  var endNodes = end.split('.');
-  var reverse = startNodes.length > endNodes.length;
+export function pathFrom(start: string, end: string): string[] {
+  let startNodes = start.split('.');
+  let endNodes = end.split('.');
+  let reverse = startNodes.length > endNodes.length;
   if (reverse) {
-    var tmp = startNodes;
+    const tmp = startNodes;
     startNodes = endNodes;
     endNodes = tmp;
   }
 
-  var common = _.intersection(endNodes, startNodes);
-  var difference = _.difference(endNodes, startNodes);
-  difference.splice(0, 0, common.pop());
+  const common = _.intersection(endNodes, startNodes);
+  const difference = _.difference(endNodes, startNodes);
+  difference.splice(0, 0, common.pop()!);
 
-  var name = common.join('.');
-  var path = _.map(difference, function(segment) {
+  let name = common.join('.');
+  const path = _.map(difference, function (segment) {
     name = (name ? name + '.' : '') + segment;
     return name;
   });
@@ -88,9 +75,9 @@ export interface TAdditional {
 
 export type TOptions = TransitionOptions & { redirect?: any; params?: any };
 
-export function getTestGoFn($uiRouter: UIRouter) {
-  if (!$uiRouter) return null;
-  var $state = $uiRouter.stateService;
+export function getTestGoFn($uiRouter: UIRouter | null) {
+  if (!$uiRouter) return null as any;
+  const $state = $uiRouter.stateService;
 
   /**
    * This test function does the following:
@@ -104,19 +91,11 @@ export function getTestGoFn($uiRouter: UIRouter) {
    *   - The reactivated states to match tAdditional.reactivated
    * - Expect the active+inactive states to match the active+inactive views
    *
-   * @param state: The target state
-   * @param tAdditional: An object with the expected transitions
-   *    {
-   *      entered:      statename or [ statenamearray ],
-   *      exited:       statename or [ statenamearray ],
-   *      inactivated:  statename or [ statenamearray ],
-   *      reactivated:  statename or [ statenamearray ]
-   *    }
-   *    note: statenamearray may be built using the pathFrom helper function
-   * @param options: options which modify the expected transition behavior
-   *    { redirect: redirectstatename }
+   * @param state - The target state
+   * @param tAdditional - An object with the expected transitions
+   * @param options - options which modify the expected transition behavior
    */
-  async function testGo(state: string, tAdditional?: TAdditional, options?: TOptions): Promise<Transition> {
+  async function testGo(state: string, tAdditional?: TAdditional | null, options?: TOptions) {
     if (tAdditional && Array.isArray(tAdditional.inactivated)) tAdditional.inactivated.reverse();
     if (tAdditional && Array.isArray(tAdditional.exited)) tAdditional.exited.reverse();
 
@@ -129,13 +108,15 @@ export function getTestGoFn($uiRouter: UIRouter) {
 
     if (tExpected && tAdditional) {
       // append all arrays in tAdditional to arrays in tExpected
-      Object.keys(tAdditional).forEach(key => (tExpected[key] = tExpected[key].concat(tAdditional[key])));
+      Object.keys(tAdditional).forEach((key) => {
+        (tExpected as any)[key] = (tExpected as any)[key].concat((tAdditional as any)[key]);
+      });
 
       Object.keys(tLog)
-        .filter(x => x !== 'views')
-        .forEach(key => {
-          var left = key + ': ' + JSON.stringify(tLog[key]);
-          var right = key + ': ' + JSON.stringify(tExpected[key]);
+        .filter((x) => x !== 'views')
+        .forEach((key) => {
+          const left = key + ': ' + JSON.stringify((tLog as any)[key]);
+          const right = key + ': ' + JSON.stringify((tExpected as any)[key]);
           expect(left).toBe(right);
         });
     }
@@ -152,6 +133,3 @@ export function resetTransitionLog() {
 }
 
 export const tlog = () => tLog;
-
-export const equalityTester = (first, second) =>
-  Object.keys(second).reduce((acc, key) => first[key] == second[key] && acc, true);
