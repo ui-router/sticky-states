@@ -16,11 +16,11 @@ class TransitionAudit {
 // Add callbacks to each
 export function addCallbacks(basicStates: any[]) {
   basicStates.forEach(function (state) {
-    function deregisterView(state: any, cause: string) {
+    function deregisterView(state: any, _cause: string) {
       const views = _.keys(state.$$state().views);
       tLog.views = _.difference(tLog.views, views);
     }
-    function registerView(state: any, cause: string) {
+    function registerView(state: any, _cause: string) {
       const views = _.keys(state.$$state().views);
       tLog.views = _.union(tLog.views, views);
     }
@@ -47,7 +47,7 @@ export function addCallbacks(basicStates: any[]) {
 export function pathFrom(start: string, end: string): string[] {
   let startNodes = start.split('.');
   let endNodes = end.split('.');
-  let reverse = startNodes.length > endNodes.length;
+  const reverse = startNodes.length > endNodes.length;
   if (reverse) {
     const tmp = startNodes;
     startNodes = endNodes;

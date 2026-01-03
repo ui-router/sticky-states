@@ -15,7 +15,6 @@ import {
   TransitionStateHookFn,
   HookRegOptions,
   PathType,
-  find,
   tail,
   isString,
   isArray,
@@ -30,7 +29,6 @@ import {
   HookMatchCriterion,
   isFunction,
   not,
-  Predicate,
   extend,
 } from '@uirouter/core';
 
@@ -54,8 +52,8 @@ declare module '@uirouter/core/lib/state/stateObject' {
 
 declare module '@uirouter/core/lib/transition/transitionService' {
   interface TransitionService {
-    onInactivate: (criteria: HookMatchCriteria, callback: TransitionStateHookFn, options?: HookRegOptions) => Function;
-    onReactivate: (criteria: HookMatchCriteria, callback: TransitionStateHookFn, options?: HookRegOptions) => Function;
+    onInactivate: (criteria: HookMatchCriteria, callback: TransitionStateHookFn, options?: HookRegOptions) => () => void;
+    onReactivate: (criteria: HookMatchCriteria, callback: TransitionStateHookFn, options?: HookRegOptions) => () => void;
   }
 }
 
@@ -109,7 +107,7 @@ const isDescendantOfAny = (ancestors: PathNode[]) => (node: PathNode) =>
  * Given a path, returns a function which takes a node.
  * Given a node, finds a node in the path which has the same state.
  */
-const findInPath = (path: PathNode[]) => (node: PathNode) => path.find(pathNode => pathNode.state == node.state);
+const findInPath = (path: PathNode[]) => (node: PathNode) => path.find(pathNode => pathNode.state === node.state);
 
 const notFoundInPath = (path: PathNode[]) => not(findInPath(path) as any);
 
@@ -125,7 +123,7 @@ const applyParamsFromPath = (path: PathNode[], dest: PathNode) => {
     throw new Error(
       `Could not find matching node for ${dest.state.name} in source path [${path
         .map(node => node.state.name)
-        .join(', ')}]`
+        .join(', ')}]`,
     );
   return extend(cloneNode(dest), { paramValues: sourceNode.paramValues });
 };
@@ -174,7 +172,7 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
       trans => {
         trans['_treeChanges'] = this._calculateStickyTreeChanges(trans);
       },
-      { priority: 100 }
+      { priority: 100 },
     );
   }
 
@@ -194,12 +192,12 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
   private _addStateCallbacks() {
     const inactivateCriteria = { inactivating: state => !!state.onInactivate };
     this.router.transitionService.onInactivate(inactivateCriteria, (trans: Transition, state: StateDeclaration) =>
-      state.onInactivate(trans, state)
+      state.onInactivate(trans, state),
     );
 
     const reactivateCriteria = { reactivating: state => !!state.onReactivate };
     this.router.transitionService.onReactivate(reactivateCriteria, (trans: Transition, state: StateDeclaration) =>
-      state.onReactivate(trans, state)
+      state.onReactivate(trans, state),
     );
   }
 
@@ -367,7 +365,7 @@ export class StickyStatesPlugin extends UIRouterPluginBase {
       {
         inherit: true,
         exitSticky: states,
-      }
+      },
     );
   }
 }
