@@ -155,12 +155,12 @@
   resolved "https://registry.yarnpkg.com/@uirouter/core/-/core-6.0.6.tgz#4bea0ca88790a939d8e84ba05a31b96f50d9abe8"
   integrity sha512-+i1iNaPQRp1JoEnxi4EsTX30bSvkWtPEenENWdvdIzX615Q3WCWwnbW9DtrwX9gSD5qmWEaQEtGMU0uF3qJ+1g==
 
-"@uirouter/publish-scripts@^2.6.3":
-  version "2.6.3"
-  resolved "https://registry.yarnpkg.com/@uirouter/publish-scripts/-/publish-scripts-2.6.3.tgz#7ac4d21dd51579f5a07a7eb291f410904454c020"
-  integrity sha512-C1griZ9sFDrGwnGxtS1QxT4UZbwOU/5zrO+SLSBe9hjvgY2ID6vadgrkMdKZriZ7XYXv+k7dLmijpPf/Jjg1Pg==
+"@uirouter/publish-scripts@^2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@uirouter/publish-scripts/-/publish-scripts-2.7.0.tgz#c2cef104f789314d7fc44412cf80d74eabe6988e"
+  integrity sha512-QUL08F5+GmlhUnewlQAoGcyWfBF+Lgf3Ol1bW9Rb1v1FV5eAwHUFk9zPtEB9YpSDwmbkU61RvT10UnPzu3cbqQ==
   dependencies:
-    check-peer-dependencies "^4.3.0"
+    check-peer-dependencies "^4.3.4"
     conventional-changelog "^3.1.24"
     conventional-changelog-ui-router-core "^1.4.2"
     find-parent-dir "^0.3.1"
@@ -682,10 +682,10 @@ chalk@^4.1.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-check-peer-dependencies@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/check-peer-dependencies/-/check-peer-dependencies-4.3.0.tgz#0fec2f5dcf9ee14a28093a908cfb94bf86bace86"
-  integrity sha512-4JPrBFzI+D8Cw36Fvdnxnz7SmbigoXg0N0Pxk1KViOcuNWRqOvJOoI7D96uSMqiU0EKr9R3xg/h3ixJW0vzhfQ==
+check-peer-dependencies@^4.3.4:
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/check-peer-dependencies/-/check-peer-dependencies-4.3.4.tgz#9ccfc507c13a1138d051d5749c7e79bf6b0ff8dd"
+  integrity sha512-Z7iMjwy85Izmjav0+9/Tok8mpDgj0r4Z//yDsmcRYVm4hUSVKQgPvtbU6OU5/y+6Ntsa0cstZhOyavwla+w74A==
   dependencies:
     resolve "^1.19.0"
     semver "^7.3.4"

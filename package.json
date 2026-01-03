@@ -49,7 +49,7 @@
     "@types/jasmine": "5.1.4",
     "@types/lodash": "4.14.150",
     "@uirouter/core": "^6.0.5",
-    "@uirouter/publish-scripts": "^2.6.3",
+    "@uirouter/publish-scripts": "^2.7.0",
     "husky": "^4.2.5",
     "jasmine-core": "^3.1.0",
     "karma": "^5.0.2",
@@ -80,6 +80,9 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
+  },
+  "checkPeerDependencies": {
+    "ignore": ["rollup", "typescript", "tslint"]
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }
