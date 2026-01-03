@@ -6,14 +6,14 @@
     "clean": "shx rm -rf lib lib-esm _bundles",
     "build": "npm run clean && tsc && tsc -m es6 -outDir lib-esm && npm run bundle",
     "bundle": "rollup -c",
-    "test": "karma start",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:downstream": "npm run build && test_downstream_projects",
     "watch": "run-p watch:*",
     "watch:buildjs": "tsc -w",
-    "watch:test": "karma start --singleRun=false --autoWatch=true --autoWatchInterval=1",
+    "watch:test": "vitest",
     "prepublishOnly": "npm run build",
-    "release": "release",
-    "debug": "karma start --singleRun=false --autoWatch=true --autoWatchInterval=1 --browsers=ChromeCanary --beep"
+    "release": "release"
   },
   "homepage": "https://ui-router.github.io",
   "contributors": [
@@ -46,19 +46,10 @@
     "@uirouter/core": ">=5.0.1"
   },
   "devDependencies": {
-    "@types/jasmine": "5.1.4",
     "@types/lodash": "4.14.150",
     "@uirouter/core": "^6.0.5",
     "@uirouter/publish-scripts": "^2.7.0",
     "husky": "^4.2.5",
-    "jasmine-core": "^3.1.0",
-    "karma": "^5.0.2",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-jasmine": "^3.1.1",
-    "karma-mocha-reporter": "^2.2.5",
-    "karma-sourcemap-loader": "^0.4.0",
-    "karma-super-dots-reporter": "^0.2.0",
-    "karma-webpack": "^5.0.1",
     "lodash": "^4.17.21",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
@@ -66,16 +57,11 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-sourcemaps": "^0.6.2",
     "rollup-plugin-uglify": "^6.0.1",
-    "ts-loader": "^7.0.1",
-    "tslint": "^6.1.2",
-    "tslint-eslint-rules": "^5.2.0",
+    "shx": "^0.3.4",
     "typescript": "^5.4.5",
-    "webpack": "^5.93.0"
+    "vitest": "^2.1.0"
   },
   "dependencies": {},
-  "resolutions": {
-    "chokidar": "^3.0.0"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
