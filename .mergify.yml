@@ -12,7 +12,6 @@ pull_request_rules:
       - check-success=ci
       - 'label=ready to squash and merge'
     actions:
-      delete_head_branch: {}
       queue:
         name: default
 
@@ -22,6 +21,5 @@ pull_request_rules:
       - check-success=ci
       - 'label=ready to rebase and merge'
     actions:
-      delete_head_branch: {}
       queue:
         name: rebase
